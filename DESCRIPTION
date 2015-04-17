@@ -1,0 +1,12 @@
+Package: actMon
+Type: Package
+Title: A tool for parsing output produced by TriKinetics' Drosophila Activity Monitor.
+Version: 0.1
+Date: 2015-04-16
+Author: Jeff Stafford
+Maintainer: Jeff Stafford <stafford@zoology.ubc.ca>
+Description: This package provides a set of functions and workflows that enables
+  (relatively) easy and reproducible use of TriKinetics' hardware output.
+License: GNU GPL-3
+LazyData: TRUE
+Imports: ggplot2
