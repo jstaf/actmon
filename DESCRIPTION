@@ -9,4 +9,5 @@ Description: This package provides a set of functions and workflows that enables
   (relatively) easy and reproducible use of TriKinetics' hardware output.
 License: GNU GPL-3
 LazyData: TRUE
-Imports: ggplot2
+Imports: ggplot2,
+    reshape2
