@@ -11,3 +11,4 @@ License: GNU GPL-3
 LazyData: TRUE
 Imports: ggplot2,
     reshape2
+Suggests: testthat
