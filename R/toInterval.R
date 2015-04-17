@@ -4,7 +4,8 @@
 # you might want to do.
 
 toInterval <- function(DAMobject, target,
-                       units = c("seconds", "minutes", "hours")) {
+                       units = c("seconds", "minutes", "hours"),
+                       aggregateBy = c("sum", "average")) {
   # Convert target to seconds
   if (units == "minutes") {
     target <- target * 60
@@ -15,7 +16,7 @@ toInterval <- function(DAMobject, target,
   # Check that we are not artificially increasing data resolution.
   interval <- getInterval(DAMobject)
   if (interval > target) {
-    stop("End interval cannot be smaller than start interval")
+    stop("End interval cannot be smaller than start interval.")
   }
 
   # Okay now scale the data
@@ -23,9 +24,22 @@ toInterval <- function(DAMobject, target,
   countsMatrix <- getVals(DAMobject)
   numInt <- length(countsMatrix[,1]) %/% scale
   remainder <- length(countsMatrix[,1]) %% scale
+  if (aggregateBy == "sum") {
+    compressed <- colSums(matrix(
+      countsMatrix[1:(length(countsMatrix[,1]) - remainder), ], nrow = scale))
+  } else {
+    compressed <- colMeans(matrix(
+      countsMatrix[1:(length(countsMatrix[,1]) - remainder), ], nrow = scale))
+  }
+  compressed <- matrix(compressed, nrow = numInt, ncol = ncol(countsMatrix))
 
+  # Slice out the proper data labels and recombine.
+  newDAM <- DAMobject[seq(1, length(DAMobject[, 1]) - scale, scale), ]
+  setVals(newDAM, compressed)
 
-  setVals(DAMobject, countsMatrix)
+  # Cleanup rownames/indices for future operations.
+  newDAM$read_index <- 1:length(newDAM$read_index)
+  rownames(newDAM) <- newDAM$read_index
+
+  return(newDAM)
 }
-
-toInterval(DAM, 60, "minutes")
