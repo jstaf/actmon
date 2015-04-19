@@ -6,12 +6,10 @@
 toInterval <- function(DAMobject, target,
                        units = c("seconds", "minutes", "hours"),
                        aggregateBy = c("sum", "average")) {
-  # Convert target to seconds
-  if (units == "minutes") {
-    target <- target * 60
-  } else if (units == "hours") {
-    target <- target * 3600
-  }
+  #Parse args
+  units <- match.arg(units)
+  target <- toSeconds(target, units)
+  aggregateBy <- match.arg(aggregateBy)
 
   # Check that we are not artificially increasing data resolution.
   interval <- getInterval(DAMobject)
