@@ -101,5 +101,14 @@ setMethod("calcStats", signature = "DAM",
             col <- which(colnames(obj@sample_info) == attribute)
             variable <- obj@sample_info[, col]
 
+            # iterate through values and calc stats
+            i <- 1
+            for (var in variable) {
+              temp <- getVals(byAttribute(obj, var, attribute))
+              stat@averages[, i] <- rowMeans(temp)
+              stat@SEM[, i] <- apply(as.matrix(temp), 1, stdError)
+              i <- i + 1
+            }
 
+            return(stat)
           })
