@@ -1,19 +1,19 @@
 # This script is designed to parse DAM output files and create intelligible output.
 # DAM <- read.delim(file.choose(), as.is = TRUE, header = FALSE)
 # sample_info <- read.csv(file.choose())
-DAM <- read.delim("", as.is = TRUE, header = FALSE)
-sample_info <- read.csv("")
+DAM <- read.delim("data/exampleDAM.txt", as.is = TRUE, header = FALSE)
+sample_info <- read.csv("data/example_smpinfo.csv")
 
 titleName = ""
 
 # any columns you wish to exlcude (like if a fly died halfway through)? Just
 # enter the number of which vials you want to exclude in a vector here. Leave
 # the vector empty if there's nothing you want to exclude.
-excluded <- c(16)
+excluded <- c()
 
 # any times you wish to exlclude? Enter the number of hours to chop off from
 # start and exoeriment duration.
-hours_start <- c(72)
+hours_start <- c()
 exp_duration <- c()
 
 # enter values from other factors column that you wish to INCLUDE, otherwise
@@ -62,13 +62,13 @@ sleep <- function(count) {
     return(100)
   }
 }
-countsMatrix <- as.matrix(counts_dropped)
-#countsMatrix <- apply(counts_dropped, c(1,2), sleep)
+#countsMatrix <- as.matrix(counts_dropped)
+countsMatrix <- apply(counts_dropped, c(1,2), sleep)
 
 # Now compute percent sleep per hour.
 hours <- length(countsMatrix[,1])%/%12
 remainder <- length(countsMatrix[,1])%%12
-hourCounts <- colSums(matrix(
+hourCounts <- colMeans(matrix(
   countsMatrix[1:(length(countsMatrix[,1])-remainder),],
   nrow = 12))
 hourCounts <- matrix(hourCounts ,nrow = hours, ncol = ncol(countsMatrix))

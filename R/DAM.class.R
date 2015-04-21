@@ -60,6 +60,12 @@ setMethod(f = "dropAttribute", signature = "DAM",
 setGeneric("catExperiments", function(obj1, obj2) {standardGeneric("catExperiments")})
 setMethod(f = "catExperiments", signature = "DAM",
           definition = function(obj1, obj2) {
+            # check that both experiments are of the same data rate
+            if (getInterval(obj1@data) != getInterval(obj2@data)) {
+              stop("Data is of unequal rates. Run toInterval() on the higher
+                   resolution experiment before concatenating.")
+            }
+
             # retrieve last vial# in obj1
             last <- colnames(obj1@data)[length(colnames(obj1@data))]
 
@@ -90,6 +96,24 @@ setMethod(f = "catExperiments", signature = "DAM",
             return(obj1)
           })
 
+setGeneric("calcSleep", function(obj) {standardGeneric("calcSleep")})
+setMethod("calcSleep", signature = "DAM",
+          definition = function(obj) {
+            rate <- getInterval(obj@data)
+            if (rate < 300) {
+              warning("Data rate is less than 5 min/reading, aggregating by sum.")
+              obj@data <- toInterval(obj@data, 5, units = "minutes", aggregateBy = "sum")
+            } else if (rate > 300) {
+              warning("Data rate is greater than 5 minutes per reading, sleep may be underestimated.")
+            }
+
+            vals <- getVals(obj@data)
+            vals <- as.data.frame(apply(vals, c(1, 2), sleep))
+            setVals(obj@data, vals)
+
+            return(obj)
+          })
+
 # Iterate through possible variations of an attribute in your dataset,
 # calculating averages/standard error of the mean/stats for each. Returns a
 # DAMstats object.
@@ -109,6 +133,8 @@ setMethod("calcStats", signature = "DAM",
               stat@SEM[, i] <- apply(as.matrix(temp), 1, stdError)
               i <- i + 1
             }
+            colnames(stat@averages) <- variable
+            colnames(stat@SEM) <- colnames(stat@averages)
 
             return(stat)
           })
