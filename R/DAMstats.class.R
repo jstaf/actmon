@@ -11,7 +11,7 @@ newStats <- function(DAM = NULL, attribute) {
 
   numFactor <- length(unique(DAM@sample_info[, colOfInterest]))
 
-  df <- as.data.frame(matrix(nrow = dim(DAM@data)[, 1], ncol = numFactor))
+  df <- as.data.frame(matrix(nrow = dim(DAM@data)[1], ncol = numFactor))
   return(new("DAMstats", averages = df, SEM = df))
 }
 

@@ -141,6 +141,28 @@ setMethod("toInterval", signature = "DAM",
             return(obj)
           })
 
+# List all attributes (column names) in the sample_info file.
+setGeneric("listAttributes", function(obj) {standardGeneric("listAttributes")})
+setMethod("listAttributes", signature = "DAM",
+          definition = function(obj) {
+            return(colnames(obj@sample_info))
+          })
+
+# A convenience method to show the possible values of an attribute.
+setGeneric("listAttribVals", function(obj, attribute) {standardGeneric("listAttribVals")})
+setMethod("listAttribVals", signature = "DAM",
+          definition = function(obj, attribute) {
+            attribute <- as.character(attribute)
+            col <- which(colnames(obj@sample_info) == attribute)
+            vals <- unique(obj@sample_info[, col])
+            # reorder factor in the order that its values appear in sampleinfo
+            if (is.factor(vals)) {
+              vals <- factor(vals, levels = vals)
+            }
+            return(vals)
+          })
+
+# Applies the function isAsleep to the dataset.
 setGeneric("calcSleep", function(obj) {standardGeneric("calcSleep")})
 setMethod("calcSleep", signature = "DAM",
           definition = function(obj) {
@@ -153,7 +175,7 @@ setMethod("calcSleep", signature = "DAM",
             }
 
             vals <- getVals(obj@data)
-            vals <- apply(vals, c(1, 2), sleep)
+            vals <- apply(vals, c(1, 2), isAsleep)
             obj@data <- setVals(obj@data, vals)
 
             return(obj)
@@ -167,13 +189,12 @@ setMethod("calcStats", signature = "DAM",
           definition = function(obj, attribute){
             # retrieve all values
             stat <- newStats(obj, attribute)
-            col <- which(colnames(obj@sample_info) == attribute)
-            variable <- obj@sample_info[, col]
+            variable <- listAttribVals(obj, attribute)
 
             # iterate through values and calc stats
             i <- 1
             for (var in variable) {
-              temp <- getVals(byAttribute(obj, var, attribute))
+              temp <- getVals(byAttribute(obj, var, attribute)@data)
               stat@averages[, i] <- rowMeans(temp)
               stat@SEM[, i] <- apply(as.matrix(temp), 1, stdError)
               i <- i + 1
