@@ -2,10 +2,8 @@
 
 setClass("DAM", slots = c(data = "data.frame", sample_info = "data.frame"))
 
+# Arguments must be dataframes.
 newExperiment <- function(dataFile = NULL, infoFile = NULL) {
-  if (is.null(dataFile) || is.null(infoFile)) {
-    warning("One or more arguments is missing from DAM constructor.")
-  }
   new("DAM", data = dataFile, sample_info = infoFile)
 }
 
@@ -88,7 +86,7 @@ setMethod(f = "catExperiments", signature = "DAM",
               if (long1 > long2) {
                 obj1@data <- obj1@data[1:long2, ]
               } else {
-                obj2@data <- obj2@data[1:long2, ]
+                obj2@data <- obj2@data[1:long1, ]
               }
             }
             obj1@data <- cbind(obj1@data, getVals(obj2@data))
@@ -153,6 +151,7 @@ setGeneric("listAttribVals", function(obj, attribute) {standardGeneric("listAttr
 setMethod("listAttribVals", signature = "DAM",
           definition = function(obj, attribute) {
             attribute <- as.character(attribute)
+            if (!any(colnames(obj@sample_info) == attribute)) stop("Attribute not found.")
             col <- which(colnames(obj@sample_info) == attribute)
             vals <- unique(obj@sample_info[, col])
             # reorder factor in the order that its values appear in sampleinfo
