@@ -4,6 +4,8 @@ setClass("DAM", slots = c(data = "data.frame", sample_info = "data.frame"))
 
 # Arguments must be dataframes.
 newExperiment <- function(dataFile = NULL, infoFile = NULL) {
+  if (is.character(dataFile)) dataFile <- parseDAM(dataFile)
+  if (is.character(infoFile)) infoFile <- read.csv(infoFile)
   new("DAM", data = dataFile, sample_info = infoFile)
 }
 
