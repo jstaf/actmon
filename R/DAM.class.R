@@ -57,43 +57,58 @@ setMethod(f = "dropAttribute", signature = "DAM",
 # doing this by timestamp, etc. - so be careful what you combine. The vial
 # indices in the second experiment are relabeled to start where the first
 # experiment stops.
-setGeneric("catExperiments", function(obj1, obj2) {standardGeneric("catExperiments")})
+setGeneric("catExperiments", function(obj_vector) {standardGeneric("catExperiments")})
 setMethod(f = "catExperiments", signature = "DAM",
-          definition = function(obj1, obj2) {
-            # check that both experiments are of the same data rate
-            if (getInterval(obj1@data) != getInterval(obj2@data)) {
-              stop("Data is of unequal rates. Run toInterval() on the higher
+          definition = function(obj_vector) {
+            if (length(obj_vector) == 1) stop("catExperiments() requires more than one object.")
+            
+            obj1 <- obj_vector[1]
+            for (number in (2:length(obj_vector)) ) {
+              obj2 <- obj_vector[number]
+              
+              # check that both experiments are of the same data rate
+              if (getInterval(obj1@data) != getInterval(obj2@data)) {
+                stop("Data is of unequal rates. Run toInterval() on the higher
                    resolution experiment before concatenating.")
-            }
-
-            # retrieve last vial# in obj1
-            last <- as.numeric(colnames(obj1@data)[length(colnames(obj1@data))])
-
-            # rename all vial#s in obj2
-            numVials <- length(obj2@sample_info[, 1])
-            obj2@sample_info[, 1] <- (last + 1):(last + numVials)
-
-            lightsCol <- which(colnames(obj2@data) == "light_status")
-            colnames(obj2@data)[lightsCol + 1:numVials] <- (last + 1):numVials
-
-            # combine objects
-            obj1@sample_info <- rbind(obj1@sample_info, obj2@sample_info)
-
-            # cut data down to smaller experiments' size THEN combine
-            long1 <- length(obj1@data[, 1])
-            long2 <- length(obj2@data[, 1])
-            if (long1 != long2) {
-              warning("Data is of unequal length. Coercing to equal size
-                      (data at the end of the longer experiment will be lost).")
-              if (long1 > long2) {
-                obj1@data <- obj1@data[1:long2, ]
-              } else {
-                obj2@data <- obj2@data[1:long1, ]
               }
+              
+              # retrieve last vial# in obj1
+              last <- as.numeric(colnames(obj1@data)[length(colnames(obj1@data))])
+              
+              # rename all vial#s in obj2
+              numVials <- length(obj2@sample_info[, 1])
+              obj2@sample_info[, 1] <- (last + 1):(last + numVials)
+              
+              lightsCol <- which(colnames(obj2@data) == "light_status")
+              colnames(obj2@data)[lightsCol + 1:numVials] <- (last + 1):numVials
+              
+              # combine objects
+              obj1@sample_info <- rbind(obj1@sample_info, obj2@sample_info)
+              
+              # cut data down to smaller experiments' size THEN combine
+              long1 <- length(obj1@data[, 1])
+              long2 <- length(obj2@data[, 1])
+              if (long1 != long2) {
+                warning("Data is of unequal length. Coercing to equal size
+                      (data at the end of the longer experiment will be lost).")
+                if (long1 > long2) {
+                  obj1@data <- obj1@data[1:long2, ]
+                } else {
+                  obj2@data <- obj2@data[1:long1, ]
+                }
+              }
+              obj1@data <- cbind(obj1@data, getVals(obj2@data))
             }
-            obj1@data <- cbind(obj1@data, getVals(obj2@data))
 
             return(obj1)
+          })
+
+# Determine measurement interval (in seconds)
+setGeneric("getInterval", function(obj) {standardGeneric("getInterval")})
+setMethod("getInterval", signature = "DAM",
+          definition = function(obj) {
+            idxDiff <- obj[3, 1] - obj[2, 1]
+            return(as.numeric(difftime(obj[3, 2], obj[2, 2], units = "secs")) / idxDiff)
           })
 
 setGeneric("toInterval", function(obj, target, units, aggregateBy) {standardGeneric("toInterval")})
@@ -138,6 +153,35 @@ setMethod("toInterval", signature = "DAM",
             # Replace old object data
             obj@data <- newDAM
 
+            return(obj)
+          })
+
+# Use this function to subset out a particular portion of an experiment (to clip
+# off unused data from beginnning and end).
+setGeneric("subsetTime", function(obj, startTime, expDuration, units) {
+  standardGeneric("subsetTime")
+  })
+setMethod("subsetTime", signature = "DAM",
+          definition = subsetTime <- function(obj, startTime = 0, expDuration = dim(obj)[1],
+                                              units = c("seconds", "minutes", "hours")) {
+            # Parse them arguments...
+            units <- match.arg(units)
+            startTime <- toSeconds(startTime, units)
+            expDuration <- toSeconds(expDuration, units)
+            interval <- getInterval(obj)
+            
+            # Fix bad values to aid indexing.
+            if (!is.integer(startTime / interval)) {
+              warning("startTime is not a multiple of data interval, coercing to integer.")
+              startTime <- floor(startTime / interval) * interval
+            }
+            if (!is.integer(expDuration / interval)) {
+              warning("expDuration is not a multiple of data interval, coercing to integer.")
+              expDuration <- floor(expDuration / interval) * interval
+            }
+            
+            # Okay subset out and return the data we want.
+            obj@data <- obj@data[hours_start:(hours_start + exp_duration), ]
             return(obj)
           })
 
