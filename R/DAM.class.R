@@ -58,16 +58,20 @@ setMethod(f = "dropAttribute", signature = "DAM",
 # indices in the second experiment are relabeled to start where the first
 # experiment stops.
 setGeneric("catExperiments", function(obj_vector) {standardGeneric("catExperiments")})
-setMethod(f = "catExperiments", signature = "DAM",
+setMethod(f = "catExperiments", signature = "list",
           definition = function(obj_vector) {
             if (length(obj_vector) == 1) stop("catExperiments() requires more than one object.")
             
-            obj1 <- obj_vector[1]
-            for (number in (2:length(obj_vector)) ) {
-              obj2 <- obj_vector[number]
+            for (i in (1:length(obj_vector)) ) {
+              if (class(obj_vector[[i]]) != "DAM") stop("One or more of the objects you are concatenating is not a valid DAM object.")
+            }
+            
+            obj1 <- obj_vector[[1]]
+            for (j in (2:length(obj_vector)) ) {
+              obj2 <- obj_vector[[j]]
               
               # check that both experiments are of the same data rate
-              if (getInterval(obj1@data) != getInterval(obj2@data)) {
+              if (getInterval(obj1) != getInterval(obj2)) {
                 stop("Data is of unequal rates. Run toInterval() on the higher
                    resolution experiment before concatenating.")
               }
@@ -107,8 +111,8 @@ setMethod(f = "catExperiments", signature = "DAM",
 setGeneric("getInterval", function(obj) {standardGeneric("getInterval")})
 setMethod("getInterval", signature = "DAM",
           definition = function(obj) {
-            idxDiff <- obj[3, 1] - obj[2, 1]
-            return(as.numeric(difftime(obj[3, 2], obj[2, 2], units = "secs")) / idxDiff)
+            idxDiff <- obj@data[3, 1] - obj@data[2, 1]
+            return(as.numeric(difftime(obj@data[3, 2], obj@data[2, 2], units = "secs")) / idxDiff)
           })
 
 setGeneric("toInterval", function(obj, target, units, aggregateBy) {standardGeneric("toInterval")})
@@ -122,13 +126,14 @@ setMethod("toInterval", signature = "DAM",
             aggregateBy <- match.arg(aggregateBy)
 
             # Check that we are not artificially increasing data resolution.
-            DAMobject <- obj@data
-            interval <- getInterval(DAMobject)
+            
+            interval <- getInterval(obj)
             if (interval > target) {
               stop("End interval cannot be smaller than start interval.")
             }
 
             # Okay now scale the data
+            DAMobject <- obj@data
             scale <- target / interval
             countsMatrix <- getVals(DAMobject)
             numInt <- length(countsMatrix[,1]) %/% scale
@@ -171,17 +176,18 @@ setMethod("subsetTime", signature = "DAM",
             interval <- getInterval(obj)
             
             # Fix bad values to aid indexing.
-            if (!is.integer(startTime / interval)) {
+            if (startTime %% interval != 0) {
               warning("startTime is not a multiple of data interval, coercing to integer.")
               startTime <- floor(startTime / interval) * interval
             }
-            if (!is.integer(expDuration / interval)) {
+            if (expDuration %% interval != 0) {
               warning("expDuration is not a multiple of data interval, coercing to integer.")
               expDuration <- floor(expDuration / interval) * interval
             }
             
             # Okay subset out and return the data we want.
-            obj@data <- obj@data[hours_start:(hours_start + exp_duration), ]
+            toReturn <- (startTime / interval):((startTime / interval) + (expDuration / interval))
+            obj@data <- obj@data[toReturn, ]
             return(obj)
           })
 
@@ -211,10 +217,10 @@ setMethod("listAttribVals", signature = "DAM",
 setGeneric("calcSleep", function(obj) {standardGeneric("calcSleep")})
 setMethod("calcSleep", signature = "DAM",
           definition = function(obj) {
-            rate <- getInterval(obj@data)
+            rate <- getInterval(obj)
             if (rate < 300) {
               warning("Data rate is less than 5 min/reading, aggregating by sum.")
-              obj@data <- toInterval(obj@data, 5, units = "minutes", aggregateBy = "sum")
+              obj <- toInterval(obj, 5, units = "minutes", aggregateBy = "sum")
             } else if (rate > 300) {
               warning("Data rate is greater than 5 minutes per reading, sleep may be underestimated.")
             }
