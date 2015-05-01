@@ -51,8 +51,8 @@ setMethod("plotStats", signature = "DAMstats",
             maxVal <- ggplot2::ggplot_build(gg)$panel$ranges[[1]]$y.range[2]
             meta$light_status <- (1 - meta$light_status) * maxVal            
             meta$light_status[meta$light_status == 0] <- NA
-            gg + ggplot2::geom_ribbon(ggplot2::aes(x = meta$index, y = 0, ymin = 0, ymax = meta$light_status),
-                                      alpha = 0.2, fill = "grey10", color = NA) +
+            gg <- gg + ggplot2::geom_ribbon(ggplot2::aes(x = meta$index, y = 0, ymin = 0, ymax = meta$light_status),
+                                            alpha = 0.05, fill = "grey10", color = NA) +
               ggplot2::scale_y_continuous(limits = c(0, maxVal))
             
             return(gg)
