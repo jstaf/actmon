@@ -167,7 +167,7 @@ setGeneric("subsetTime", function(obj, startTime, expDuration, units) {
   standardGeneric("subsetTime")
   })
 setMethod("subsetTime", signature = "DAM",
-          definition = subsetTime <- function(obj, startTime = 0, expDuration = dim(obj)[1],
+          definition = function(obj, startTime = 0, expDuration = dim(obj)[1],
                                               units = c("seconds", "minutes", "hours")) {
             # Parse them arguments...
             units <- match.arg(units)
