@@ -21,9 +21,18 @@ setMethod("plotStats", signature = "DAMstats",
                                         as.character(colnames(statsObj@averages)),
                                         c("AVG", "SEM"))
             plotArray <- reshape2::melt(plotArray)
-            #TODO add in the read timestamps and light status here
             colnames(plotArray) <- c("index", "attrib", "type", "value")
             plotData <- reshape2::dcast(plotArray, attrib + index ~ type)
+            
+            # create a new dfrm with metadata
+            meta <- cbind.data.frame(c(rownames(statsObj@averages),
+                                       statsObj@read_time,
+                                       statsObj@light_status))
+            colnames(meta) <- c("index", "read_time", "light_status")
+            
+            # create labels for x axis
+            idxPerDay <- 12 / as.numeric(difftime(meta[2, 1], meta[1, 1]))
+            breakSeq <- seq(0, meta$index[length(meta$index)], idxPerDay)
             
             # create the actual plot and return it
             gg <- ggplot2::ggplot(plotData, ggplot2::aes(x = index,
@@ -32,6 +41,7 @@ setMethod("plotStats", signature = "DAMstats",
                                                          ymax = AVG + SEM,
                                                          fill = attrib,
                                                          color = attrib)) +
+              # <- add polygon method for light status here....
               ggplot2::geom_line() +
               ggplot2::geom_ribbon(alpha = 0.3, color = NA) +
               ggplot2::theme_bw()
