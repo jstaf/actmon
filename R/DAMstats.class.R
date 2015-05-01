@@ -24,15 +24,15 @@ setMethod("plotStats", signature = "DAMstats",
             colnames(plotArray) <- c("index", "attrib", "type", "value")
             plotData <- reshape2::dcast(plotArray, attrib + index ~ type)
             
-            # create a new dfrm with metadata
-            meta <- cbind.data.frame(as.numeric(rownames(statsObj@averages)),
-                                     statsObj@read_time,
-                                     statsObj@light_status)
+            # create a new dfrm with meta
+            meta <- data.frame(as.numeric(rownames(statsObj@averages)),
+                                        statsObj@read_time,
+                                        statsObj@light_status)
             colnames(meta) <- c("index", "read_time", "light_status")
             
             # create labels for x axis
-            idxPerDay <- 12 / as.numeric(difftime(meta[2, 2], meta[1, 2]))
-            breakSeq <- seq(0, meta$index[length(meta$index)], idxPerDay)
+            hoursPerIdx <- as.numeric(difftime(meta[2, 2], meta[1, 2], units = "hours"))
+            breakSeq <- seq(0, meta$index[length(meta$index)], 12 / hoursPerIdx)
             
             # create the actual plot and return it
             gg <- ggplot2::ggplot(plotData, ggplot2::aes(x = index,
@@ -44,14 +44,15 @@ setMethod("plotStats", signature = "DAMstats",
               ggplot2::geom_line() +
               ggplot2::geom_ribbon(alpha = 0.3, color = NA) +
               ggplot2::theme_bw() +
-              ggplot2::scale_x_continuous(breaks = breakSeq)
+              ggplot2::scale_x_continuous(breaks = breakSeq, labels = breakSeq * hoursPerIdx)
             
             # TODO: need to somehow specify this before the colored line calls
             # ugly, but it works... retrieve maximum y axis value
             maxVal <- ggplot2::ggplot_build(gg)$panel$ranges[[1]]$y.range[2]
             meta$light_status <- (1 - meta$light_status) * maxVal            
             meta$light_status[meta$light_status == 0] <- NA
-            gg <- gg + ggplot2::geom_ribbon(ggplot2::aes(x = meta$index, y = 0, ymin = 0, ymax = meta$light_status),
+            gg <- gg + ggplot2::geom_ribbon(data = meta,
+              ggplot2::aes(x = index, y = 0, ymin = 0, ymax = light_status),
                                             alpha = 0.05, fill = "grey10", color = NA) +
               ggplot2::scale_y_continuous(limits = c(0, maxVal))
             
