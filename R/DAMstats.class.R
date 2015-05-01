@@ -46,19 +46,14 @@ setMethod("plotStats", signature = "DAMstats",
               ggplot2::theme_bw() +
               ggplot2::scale_x_continuous(breaks = breakSeq)
             
-            
+            # TODO: need to somehow specify this before the colored line calls
             # ugly, but it works... retrieve maximum y axis value
             maxVal <- ggplot2::ggplot_build(gg)$panel$ranges[[1]]$y.range[2]
-            plotData$light_status <- rep(1 - meta$light_status, length(plotData[, 1]) / length(meta$index)) * maxVal            
-            plotData$light_status[plotData$light_status == 0] <- NA
-            gg + ggplot2::geom_ribbon(ggplot2::aes(x = plotData$index, y = 0,
-                                                   ymin = 0,
-                                                 ymax = plotData$light_status,
-                                                 alpha = 0.00000000001, color = NA, fill = NA, linetype = NA)) 
-            
-            #+
-            #  ggplot2::scale_y_continuous(limits = c(0, maxVal))
-            gg
+            meta$light_status <- (1 - meta$light_status) * maxVal            
+            meta$light_status[meta$light_status == 0] <- NA
+            gg + ggplot2::geom_ribbon(ggplot2::aes(x = meta$index, y = 0, ymin = 0, ymax = meta$light_status),
+                                      alpha = 0.2, fill = "grey10", color = NA) +
+              ggplot2::scale_y_continuous(limits = c(0, maxVal))
             
             return(gg)
           })
