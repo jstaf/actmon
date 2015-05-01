@@ -4,10 +4,13 @@
 
 findZeros <- function(vector) {
   zeroStarts <- rep(NA, length(vector))
-  
-  for (i in 1:length(vector)) {
-    
+  for (i in 2:length(vector)) {
+    j <- 1
+    if ((vector[i] == 0) && (vector[i - 1] != vector[i])) {
+      zeroStarts[j]
+      j <- j + 1
+    }
   }
-  
+  zeroStarts <- na.omit(zeroStarts)
   return(zeroStarts)
 }

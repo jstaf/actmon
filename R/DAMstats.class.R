@@ -25,13 +25,13 @@ setMethod("plotStats", signature = "DAMstats",
             plotData <- reshape2::dcast(plotArray, attrib + index ~ type)
             
             # create a new dfrm with metadata
-            meta <- cbind.data.frame(c(rownames(statsObj@averages),
-                                       statsObj@read_time,
-                                       statsObj@light_status))
+            meta <- cbind.data.frame(as.numeric(rownames(statsObj@averages)),
+                                     statsObj@read_time,
+                                     statsObj@light_status)
             colnames(meta) <- c("index", "read_time", "light_status")
             
             # create labels for x axis
-            idxPerDay <- 12 / as.numeric(difftime(meta[2, 1], meta[1, 1]))
+            idxPerDay <- 12 / as.numeric(difftime(meta[2, 2], meta[1, 2]))
             breakSeq <- seq(0, meta$index[length(meta$index)], idxPerDay)
             
             # create the actual plot and return it
@@ -41,9 +41,25 @@ setMethod("plotStats", signature = "DAMstats",
                                                          ymax = AVG + SEM,
                                                          fill = attrib,
                                                          color = attrib)) +
-              # <- add polygon method for light status here....
               ggplot2::geom_line() +
               ggplot2::geom_ribbon(alpha = 0.3, color = NA) +
-              ggplot2::theme_bw()
+              ggplot2::theme_bw() +
+              ggplot2::scale_x_continuous(breaks = breakSeq)
+            
+            
+            # ugly, but it works... retrieve maximum y axis value
+            maxVal <- ggplot2::ggplot_build(gg)$panel$ranges[[1]]$y.range[2]
+            plotData$light_status <- rep(1 - meta$light_status, length(plotData[, 1]) / length(meta$index)) * maxVal            
+            plotData$light_status[plotData$light_status == 0] <- NA
+            gg + ggplot2::geom_ribbon(ggplot2::aes(x = plotData$index, y = 0,
+                                                   ymin = 0,
+                                                 ymax = plotData$light_status,
+                                                 alpha = 0.00000000001, color = NA, fill = NA, linetype = NA)) 
+            
+            #+
+            #  ggplot2::scale_y_continuous(limits = c(0, maxVal))
+            gg
+            
             return(gg)
           })
+
