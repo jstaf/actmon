@@ -111,8 +111,10 @@ setMethod(f = "catExperiments", signature = "list",
 setGeneric("getInterval", function(obj) {standardGeneric("getInterval")})
 setMethod("getInterval", signature = "DAM",
           definition = function(obj) {
-            idxDiff <- obj@data[10, 1] - obj@data[9, 1]
-            return(as.numeric(difftime(obj@data[10, 2], obj@data[9, 2], units = "secs")) / idxDiff)
+            # remove nas
+            temp <- na.omit(obj@data)
+            idxDiff <- temp[10, 1] - temp[9, 1]
+            return(as.numeric(difftime(temp[10, 2], temp[9, 2], units = "secs")) / idxDiff)
           })
 
 setGeneric("toInterval", function(obj, target, units, aggregateBy) {standardGeneric("toInterval")})
