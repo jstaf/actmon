@@ -150,7 +150,8 @@ setMethod("toInterval", signature = "DAM",
             compressed <- matrix(compressed, nrow = numInt, ncol = ncol(countsMatrix))
 
             # Slice out the proper data labels and recombine.
-            newDAM <- DAMobject[seq(1, length(DAMobject[, 1]) - scale, scale), ]
+            # newDAM <- DAMobject[seq(1, length(DAMobject[, 1]) - scale, scale), ] 
+            newDAM <- DAMobject[seq(1, length(DAMobject[, 1]) - 1, scale), ]
             newDAM <- setVals(newDAM, compressed)
 
             # Cleanup rownames/indices for future operations.

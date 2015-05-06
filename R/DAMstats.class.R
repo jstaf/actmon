@@ -31,7 +31,9 @@ setMethod("plotStats", signature = "DAMstats",
             colnames(meta) <- c("index", "read_time", "light_status")
             
             # create labels for x axis
-            hoursPerIdx <- as.numeric(difftime(meta[2, 2], meta[1, 2], units = "hours"))
+            # tolerate NAs
+            temp <- na.omit(meta)
+            hoursPerIdx <- as.numeric(difftime(temp[2, 2], temp[1, 2], units = "hours"))
             breakSeq <- seq(0, meta$index[length(meta$index)], 12 / hoursPerIdx)
             
             # create the actual plot and return it
