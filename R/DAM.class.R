@@ -153,6 +153,11 @@ setMethod("toInterval", signature = "DAM",
             # newDAM <- DAMobject[seq(1, length(DAMobject[, 1]) - scale, scale), ] 
             newDAM <- DAMobject[seq(1, length(DAMobject[, 1]) - 1, scale), ]
             newDAM <- setVals(newDAM, compressed)
+            
+            # Calculate proper light status data
+            newLights <- colMeans(matrix(
+              DAMobject$light_status[1:(length(DAMobject[,1]) - remainder)], nrow = scale))
+            newDAM$light_status <- as.integer(round(matrix(newLights, nrow = numInt, ncol = 1)))
 
             # Cleanup rownames/indices for future operations.
             newDAM$read_index <- 1:length(newDAM$read_index)
