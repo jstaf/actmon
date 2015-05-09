@@ -21,7 +21,7 @@ setMethod("toAvgDay", signature = "DAM",
               vals[i, ] <- apply(vals[corrIdx + i, ], 2, mean, na.rm = TRUE)
             }
             # take only the averaged first day
-            avgDay <- setVals(avgDay, vals[1:dayLength, ])
+            avgDay@data <- setVals(avgDay@data, vals[1:dayLength, ])
             return(avgDay)
           })
           

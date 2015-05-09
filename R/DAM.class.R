@@ -13,11 +13,11 @@ newExperiment <- function(dataFile = NULL, infoFile = NULL) {
 setGeneric("newTemplate", function(obj, long) {standardGeneric("newTemplate")})
 setMethod("newTemplate", signature = c("DAM", "numeric"),
           definition = function(obj, long) {
-            template <- as.data.frame(matrix(nrow = long, 
-                                             ncol = length(colnames(obj@data))))
+            template <- obj@data[1:long, ]
             colnames(template) <- colnames(obj@data)
-            idx <- which(colnames(template) == "light_status")
+            
             # blindly copy over metadata without processing
+            idx <- which(colnames(template) == "light_status")
             template[1:long, 1:idx] <- obj@data[1:long, 1:idx]
             
             return(new("DAM", data = template, sample_info = obj@sample_info))
