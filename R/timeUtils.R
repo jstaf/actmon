@@ -30,9 +30,12 @@ setGeneric("syncLightCycle", function(DAM, completeFirstDay, lightFirst) {
   standardGeneric("syncLightCycle")
   })
 setMethod("syncLightCycle", signature = "DAM",
-          definition = function(DAM, completeFirstDay = TRUE, lightFirst = TRUE) {
+          definition = function(DAM, completeFirstDay, lightFirst = TRUE) {
             # First index is where we start cutting things
-            first <- getLightChanges(DAM)[1]
+            tryCatch(first <- getLightChanges(DAM)[1],
+                     error = function(e) {
+                       stop("Not enough light changes detected.")
+                     })
             idxPerHour <- 3600 / getInterval(DAM)
             
             # lag our start point by 12 hours if the first light status != lightFist
@@ -45,13 +48,14 @@ setMethod("syncLightCycle", signature = "DAM",
             if (!completeFirstDay) {
               # how many NANs do we need to make
               toCreate <- (idxPerHour * 12) - first
-              dummy <- as.data.frame(matrix(nrow = toCreate, ncol = dim(DAM@data)[2]))
-              colnames(dummy) <- colnames(DAM@data)
-              # need to format dummy's dates as posixct
-              dummy$read_time <- as.POSIXct(dummy$read_time)
-              
-              DAM@data <- rbind(dummy, DAM@data)
-              
+              if (toCreate > 0) {
+                dummy <- as.data.frame(matrix(nrow = toCreate, ncol = dim(DAM@data)[2]))
+                colnames(dummy) <- colnames(DAM@data)
+                # need to format dummy's dates as posixct
+                dummy$read_time <- as.POSIXct(dummy$read_time)
+                
+                DAM@data <- rbind(dummy, DAM@data)
+              }
               # we're going to take the whole dataset start now
               first <- 0
             }
