@@ -1,4 +1,31 @@
 
+# flattens days to an average day... data from each individual fly is calculated separately
+setGeneric("toAvgDay", function(DAM, ..., incomplete.rm = TRUE) {standardGeneric("toAvgDay")})
+setMethod("toAvgDay", signature = "DAM",
+          definition = function(DAM, ..., incomplete.rm) {
+            dayLength <- 3600 / getInterval(DAM) * 24
+            
+            if (incomplete.rm) {
+              days <- (length(DAM@data$read_index) %/% dayLength)
+            } else {
+              days <- ceiling(length(DAM@data$read_index) / dayLength)
+            }
+            
+            avgDay <- newTemplate(DAM, dayLength)
+            
+            # these are the values to calculate means of
+            corrIdx <- (1:days * dayLength) - dayLength
+            
+            vals <- getVals(DAM@data)
+            for (i in 1:dayLength) {
+              vals[i, ] <- apply(vals[corrIdx + i, ], 2, mean)
+            }
+            # take only the averaged first day
+            avgDay <- setVals(avgDay, vals[1:dayLength, ])
+            return(avgDay)
+          })
+          
+
 # finds the lighting interval in hours
 setGeneric("findLightInterval", function(DAM) {standardGeneric("findLightInterval")})
 setMethod("findLightInterval", signature = "DAM",
@@ -26,11 +53,11 @@ setMethod("findLightInterval", signature = "DAM",
           })
 
 # chop experiment down to complete days
-setGeneric("syncLightCycle", function(DAM, completeFirstDay, lightFirst) {
+setGeneric("syncLightCycle", function(DAM, ..., completeFirstDay = FALSE, lightFirst = TRUE) {
   standardGeneric("syncLightCycle")
   })
 setMethod("syncLightCycle", signature = "DAM",
-          definition = function(DAM, completeFirstDay, lightFirst = TRUE) {
+          definition = function(DAM, ..., completeFirstDay, lightFirst) {
             # First index is where we start cutting things
             tryCatch(first <- getLightChanges(DAM)[1],
                      error = function(e) {
@@ -51,7 +78,7 @@ setMethod("syncLightCycle", signature = "DAM",
               if (toCreate > 0) {
                 dummy <- as.data.frame(matrix(nrow = toCreate, ncol = dim(DAM@data)[2]))
                 colnames(dummy) <- colnames(DAM@data)
-                # need to format dummy's dates as posixct
+                # need to format dummy's dates as posixctlength(DAM@data$read_index) %/% dayLength
                 dummy$read_time <- as.POSIXct(dummy$read_time)
                 
                 DAM@data <- rbind(dummy, DAM@data)

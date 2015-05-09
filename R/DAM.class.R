@@ -9,6 +9,20 @@ newExperiment <- function(dataFile = NULL, infoFile = NULL) {
   new("DAM", data = dataFile, sample_info = infoFile)
 }
 
+# create a new "empty template" for replacement
+setGeneric("newTemplate", function(obj, long) {standardGeneric("newTemplate")})
+setMethod("newTemplate", signature = c("DAM", "numeric"),
+          definition = function(obj, long) {
+            template <- as.data.frame(matrix(nrow = long, 
+                                             ncol = length(colnames(obj@data))))
+            colnames(template) <- colnames(obj@data)
+            idx <- which(colnames(template) == "light_status")
+            # blindly copy over metadata without processing
+            template[1:long, 1:idx] <- obj@data[1:long, 1:idx]
+            
+            return(new("DAM", data = template, sample_info = obj@sample_info))
+          })
+
 # A more generic function to subset your data by whichever column you freaking
 # want. Even works on vectors, so you can subset by multiple values of an
 # attribute at a time.
