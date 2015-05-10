@@ -19,6 +19,8 @@ setMethod("prepPlot", signature = "DAMstats",
                                statsObj@light_status)
             colnames(meta) <- c("index", "read_time", "light_status")
             
+            # an ugly way of passing data
+            # TODO: bundle the meta and plotdata together
             return(list(meta, plotData))
           })
 
