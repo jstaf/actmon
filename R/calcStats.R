@@ -21,7 +21,7 @@ setMethod("calcStats", signature = "DAM",
             
             # okay do a one-way anova if there's only one row
             if (length(obj@data[, 1]) == 1) {
-              anova_results <- calcAnova1(obj, 1, attribute)
+              stat@anova_results <- calcAnova1(obj, 1, attribute)
             }
             
             return(stat)
