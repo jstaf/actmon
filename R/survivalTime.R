@@ -1,20 +1,33 @@
-# Computes the index at which a fly died in the data
+# applies the survival time function across columns
+setGeneric("calcSurvivalTime", function(obj) {standardGeneric("calcSurvivalTime")})
+setMethod("calcSurvivalTime", signature = "DAM",
+          definition = function(obj) {
+            vals <- getVals(obj@data)
+            survival <- apply(vals, 2, survivalTime)
+            return(survival)
+          })
 
+# Computes the index at which a fly died in the data
 survivalTime <- function(vector) {
-  zeroCounts <- which(vector < 10)
-  if (!is.null(zeroCounts)) {
-    lastIdx = rep(NA, length(zeroCounts) - 1)
-    # find the time since last zero measurement
-    for (i in 1:length(zeroCounts) - 1) {
-      lastIdx[i] = zeroCounts[i + 1] - zeroCounts[i]
-    }
-    #detect if there were multiple periods of no movement
-    if (any(lastIdx != 1)) {
-      #retrieve the last index+1 where the flies stopped moving for over an hour
-      zeroCounts[rev(which(lastIdx != 1))[1] + 1]
+  threshold <- 10
+  zeroCounts <- which(vector < threshold)
+  # zeroCounts must not be empty or have a length of 1
+  if (length(zeroCounts) > 1) {
+    # find streaks of zeros
+    streaks <- whichChanged(zeroCounts, 1)
+    
+    # all following values after the last streak must be less than the movement threshold
+    isAlive <- any(vector[zeroCounts[streaks[length(streaks)]]]:vector[length(vector)] > threshold)
+    if (isAlive) {
+      ans <- NA
     } else {
-      # otherwise the first value is the only period of no movement
-      zeroCounts[1]
+      # last index of streaks marks death
+      ans <- zeroCounts[streaks[length(streaks)]]
     }
-  } else NA
+  } else {
+    # no periods of no movement found
+    # NOTE: does not accept no movement during only the last index as death
+    ans <- NA
+  }
+  return(ans)
 }

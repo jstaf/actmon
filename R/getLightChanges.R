@@ -38,14 +38,3 @@ setMethod("getLightChanges", signature = "DAM",
             # remove the small value streaks from diff
             return(diff[-idx])
           })
-
-# find indices of which values which differed by more than a certain delta
-whichChanged <- function(vector, delta) {
-  changed <- rep(FALSE, length(vector))
-  for (i in 2:length(vector)) {
-    if (abs(vector[i] - vector[i - 1]) > delta) {
-      changed[i] <- TRUE
-    }
-  }
-  return(which(changed))
-}
