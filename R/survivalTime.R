@@ -1,7 +1,7 @@
 # applies the survival time function across columns
-setGeneric("calcSurvivalTime", function(obj) {standardGeneric("calcSurvivalTime")})
+setGeneric("calcSurvivalTime", function(obj, ..., endThresh = 4) {standardGeneric("calcSurvivalTime")})
 setMethod("calcSurvivalTime", signature = "DAM",
-          definition = function(obj) {
+          definition = function(obj, ..., endThresh) {
             vals <- getVals(obj@data)
             survival <- apply(vals, 2, survivalTime, threshold = 5)
             
@@ -10,8 +10,9 @@ setMethod("calcSurvivalTime", signature = "DAM",
             idxPerHour <- 3600 / getInterval(obj)
             hours <- (length(obj@data[, 1]) - survival) / idxPerHour
             
-            # whichever were motionless for less than 4 hours are NOT dead
-            survival[which(hours < 4)] <- NA
+            # whichever were motionless for less than endThresh hours at the end
+            # of the recording are NOT dead
+            survival[which(hours < endThresh)] <- NA
             
             return(survival)
           })
