@@ -3,13 +3,21 @@ setGeneric("calcSurvivalTime", function(obj) {standardGeneric("calcSurvivalTime"
 setMethod("calcSurvivalTime", signature = "DAM",
           definition = function(obj) {
             vals <- getVals(obj@data)
-            survival <- apply(vals, 2, survivalTime)
+            survival <- apply(vals, 2, survivalTime, threshold = 5)
+            
+            # flies need to have been motionless for several hours before they
+            # can be considered "dead" ...
+            idxPerHour <- 3600 / getInterval(obj)
+            hours <- (length(obj@data[, 1]) - survival) / idxPerHour
+            
+            # whichever were motionless for less than 4 hours are NOT dead
+            survival[which(hours < 4)] <- NA
+            
             return(survival)
           })
 
 # Computes the index at which a fly died in the data
-survivalTime <- function(vector) {
-  threshold <- 10
+survivalTime <- function(vector, threshold) {
   zeroCounts <- which(vector < threshold)
   # zeroCounts must not be empty or have a length of 1
   if (length(zeroCounts) > 1) {
