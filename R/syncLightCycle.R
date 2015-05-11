@@ -34,7 +34,8 @@ setMethod("syncLightCycle", signature = "DAM",
             }
             
             hours <- (length(DAM@data$read_index) - first) / idxPerHour
-            days <- (hours %/% 24) * 24
+            #TODO make sure we don't accidently lop off a day
+            days <- ceiling(hours / 24) * 24
             
             return(subsetTime(DAM, 
                               startTime = first, 

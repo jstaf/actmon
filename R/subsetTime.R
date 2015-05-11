@@ -5,7 +5,7 @@ setGeneric("subsetTime", function(obj, startTime, expDuration, units) {
 })
 setMethod("subsetTime", signature = "DAM",
           definition = function(obj, startTime = 0, expDuration = dim(obj)[1],
-                                units = c("seconds", "minutes", "hours")) {
+                                units = c("seconds", "minutes", "hours", "days")) {
             # Parse them arguments...
             units <- match.arg(units)
             startTime <- toSeconds(startTime, units)

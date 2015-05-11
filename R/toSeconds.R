@@ -8,6 +8,8 @@ toSeconds <- function(time, units = c("seconds", "minutes", "hours")) {
     return(time * 60)
   } else if (units == "hours") {
     return(time * 3600)
+  } else if (units == "days") {
+    return(time * 86400)
   } else {
     return(time)
   }

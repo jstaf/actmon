@@ -37,13 +37,16 @@ setMethod("calcAnova2", signature = c("DAM", "character"),
             colnames(melted) <- c("index", "attribute", "value")
             melted$index <- as.factor(melted$index)
             
+            pvals <- NA
             # okay compute the model
             model <- with(melted, aov(value ~ attribute * index))
             print(summary(model))
-            pvals <- do.call(rbind, TukeyHSD(model))
-            # take only pvals <= 0.05
-            pvals <- pvals[pvals[, "p adj"] <= 0.05, ]
-            print(pvals)
+            if (length(unique(melted$index)) <= 6) {
+              pvals <- do.call(rbind, TukeyHSD(model))
+              # take only pvals <= 0.05
+              pvals <- pvals[pvals[, "p adj"] <= 0.05, ]
+              print(pvals)
+            }
             return(pvals)
           })
 
