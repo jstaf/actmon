@@ -1,6 +1,6 @@
 # Converts "units" args in other functions to seconds.
 
-toSeconds <- function(time, units = c("seconds", "minutes", "hours")) {
+toSeconds <- function(time, units = c("seconds", "minutes", "hours", "days")) {
   units <- match.arg(units)
 
   # Convert target to seconds

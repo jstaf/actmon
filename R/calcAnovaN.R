@@ -3,11 +3,11 @@ setGeneric("calcAnova1", function(obj, row, attribute) {standardGeneric("calcAno
 setMethod("calcAnova1", signature = c("DAM", "numeric", "character"), 
           definition = function(obj, row, attribute) {
             dat <- getVals(obj@data)[1, ]
-            conditions <- obj@sample_info[, attribute]
-            if (length(dat) != length(conditions)) {
+            attributes <- obj@sample_info[, attribute]
+            if (length(dat) != length(attributes)) {
               stop("Number of conditions is unequal to the data length.")
             }
-            model <- aov(dat ~ conditions)
+            model <- aov(dat ~ attributes)
             print(summary(model))
             # this is dirty - perform tukey hsd if p<0.05
             if (summary(model)[[1]][["Pr(>F)"]][[1]] <= 0.05) {
@@ -38,10 +38,11 @@ setMethod("calcAnova2", signature = c("DAM", "character"),
             melted$index <- as.factor(melted$index)
             
             pvals <- NA
-            # okay compute the model
-            model <- with(melted, aov(value ~ attribute * index))
-            print(summary(model))
             if (length(unique(melted$index)) <= 6) {
+              # okay compute the model
+              model <- with(melted, aov(value ~ attribute * index))
+              print(summary(model))
+              
               pvals <- do.call(rbind, TukeyHSD(model))
               # take only pvals <= 0.05
               pvals <- pvals[pvals[, "p adj"] <= 0.05, ]
