@@ -4,6 +4,10 @@ setMethod("getInterval", signature = "DAM",
           definition = function(obj) {
             # remove nas
             temp <- na.omit(obj@data)
-            idxDiff <- temp[10, 1] - temp[9, 1]
-            return(as.numeric(difftime(temp[10, 2], temp[9, 2], units = "secs")) / idxDiff)
+            idxDiff <- temp[2, 1] - temp[1, 1]
+            if (is.na(idxDiff) || (idxDiff < 1)) {
+              stop("Something is wrong with the first few read indices of your data.")
+            }
+            
+            return(as.numeric(difftime(temp[2, 2], temp[1, 2], units = "secs")) / idxDiff)
           })
