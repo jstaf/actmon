@@ -20,8 +20,14 @@ setMethod("calcSurvivalTime", signature = "DAM",
 # Computes the index at which a fly died in the data
 survivalTime <- function(vector, threshold) {
   zeroCounts <- which(vector < threshold)
-  # zeroCounts must not be empty or have a length of 1
-  if (length(zeroCounts) > 1) {
+  
+  if (length(zeroCounts) == length(vector)) {
+    # the fly was dead the whole time
+    ans <- 1
+    # zeroCounts must not be empty or have a length of 1
+  } else if ((length(zeroCounts) > 1) &&
+             # just being safe
+             (length(zeroCounts) != length(vector))) { 
     # find streaks of zeros
     streaks <- whichChanged(zeroCounts, 1)
     
