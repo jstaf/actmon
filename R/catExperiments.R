@@ -29,7 +29,7 @@ setMethod(f = "catExperiments", signature = "list",
               obj2@sample_info[, 1] <- (last + 1):(last + numVials)
               
               lightsCol <- which(colnames(obj2@data) == "light_status")
-              colnames(obj2@data)[lightsCol + 1:numVials] <- (last + 1):numVials
+              colnames(obj2@data)[lightsCol + 1:numVials] <- (last + 1):(last + numVials)
               
               # combine objects
               obj1@sample_info <- rbind(obj1@sample_info, obj2@sample_info)
