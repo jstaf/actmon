@@ -1,8 +1,35 @@
 # This sets up the DAM experiment class and its native methods.
 
+#' DAM experiment object
+#' 
+#' This is an S4 object designed to hold the output produced by Trikinetics' 
+#' Drosophila Activity Monitor in its native format as well as its metadata.
+#' 
+#' @slot data A dataframe containing the output of a Drosophila Activity Monitor
+#'   experiment.
+#' @slot sample_info A dataframe that contains the metadata for an activity
+#'   monitor experiment, with one entry for every vial present.
+#'   
+#' @export
 setClass("DAM", slots = c(data = "data.frame", sample_info = "data.frame"))
 
-# Arguments must be dataframes.
+
+#' Create a DAM experiment
+#' 
+#' @param dataFile A string containing the path to a valid DAM output .txt file.
+#' @param infoFile A string containing the path to a .csv (comma-separated 
+#'   values) file that you have created for the experiment. The only 
+#'   requirements for this file is that it must contain a 1-line header (these 
+#'   are the attribute names), and the first column must contain the vial
+#'   numbers used in the experiment (typically 1 through 32).
+#'   
+#' @return A DAM S4 object.
+#' @export
+#' 
+#' @examples
+#' \dontrun{
+#' DAM <- newExperiment(dataFile = "/path/to/DAM_output.txt", infoFile = "/path/to/metadata.csv")
+#' }
 newExperiment <- function(dataFile = NULL, infoFile = NULL) {
   if (is.character(dataFile)) dataFile <- parseDAM(dataFile)
   if (is.character(infoFile)) infoFile <- read.csv(infoFile)

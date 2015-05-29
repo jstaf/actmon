@@ -1,7 +1,19 @@
-# Use this function to mash experiments together. There is no restriction to
-# doing this by timestamp, etc. - so be careful what you combine. The vial
-# indices in the second experiment are relabeled to start where the first
-# experiment stops.
+#' Concatenate experiments
+#' 
+#' Use this function to mash experiments together. There is no restriction to 
+#' doing this by timestamp, etc. - so be careful what you combine. The vial 
+#' indices in the second experiment are relabeled to start where the first 
+#' experiment stops. All metadata is maintained throughout the operation. Longer
+#' experiments are coerced down to the size of the smallest experiment.
+#' 
+#' @param obj_vector A vector of datasets you wish to concatenate. Time 
+#'   intervals for each dataset must be the same.
+#'   
+#' @return A DAM S4 object.
+#' @export
+#' 
+#' @examples 
+#' biggerDAM <- catExperiments(c(DAM_DD, DAM_DD))
 setGeneric("catExperiments", function(obj_vector) {standardGeneric("catExperiments")})
 setMethod(f = "catExperiments", signature = "list",
           definition = function(obj_vector) {

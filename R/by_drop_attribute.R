@@ -1,6 +1,27 @@
-# A more generic function to subset your data by whichever column you freaking
-# want. Even works on vectors, so you can subset by multiple values of an
-# attribute at a time.
+#' Subset data by an attribute
+#' 
+#' A more generic function to subset your data by whichever column you  want.
+#' Even works on vectors, so you can subset by multiple values of an attribute
+#' at a time. To remove data by an attribute, see \code{\link{dropAttribute}}.
+#' 
+#' @seealso \code{\link{dropAttribute}}
+#' 
+#' @param obj A valid DAM object (created by \code{\link{newExperiment}}).
+#' @param string Attribute values to include. Can be a vector.
+#' @param col Which column of attribute values should be used.
+#'   
+#' @return Returns a DAM S4 object.
+#' @export
+#' 
+#' @examples
+#' listAttribVals(DAM_DD, "genotype")
+#' returnedDAM <- byAttribute(DAM_DD, "experimental")
+#' listAttribVals(returnedDAM, "genotype")
+#' 
+#' listAttribVals(DAM_DD, "genotype")
+#' returnedDAM <- byAttribute(DAM_DD, c("control A", "control B"))
+#' listAttribVals(returnedDAM, "genotype")
+#' 
 setGeneric("byAttribute", function(obj, string, col) {standardGeneric("byAttribute")})
 setMethod(f = "byAttribute", signature = "DAM",
           definition = function(obj, string, col) {
@@ -21,7 +42,28 @@ setMethod(f = "byAttribute", signature = "DAM",
             return(obj)
           })
 
-# Equivalent to byAttribute(), but drops data by a value instead. Works on vectors.
+#' Remove data by an attribute
+#'
+#' Equivalent to \code{\link{byAttribute}}, but drops data by a value instead. Works on vectors.
+#'
+#' @seealso \code{\link{byAttribute}}
+#'
+#' @param obj A valid DAM object (created by \code{\link{newExperiment}}).
+#' @param string Attribute values to include. Can be a vector.
+#' @param col Which column of attribute values should be used.
+#'   
+#' @return Returns a DAM S4 object.
+#' @export
+#' 
+#' @examples
+#' listAttribVals(DAM_DD, "genotype")
+#' returnedDAM <- byAttribute(DAM_DD, "experimental")
+#' listAttribVals(returnedDAM, "genotype")
+#' 
+#' listAttribVals(DAM_DD, "genotype")
+#' returnedDAM <- byAttribute(DAM_DD, c("control A", "control B"))
+#' listAttribVals(returnedDAM, "genotype")
+#' 
 setGeneric("dropAttribute", function(obj, string, col) {standardGeneric("dropAttribute")})
 setMethod(f = "dropAttribute", signature = "DAM",
           definition = function(obj, string, col) {

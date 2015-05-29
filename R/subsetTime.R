@@ -1,5 +1,27 @@
-# Use this function to subset out a particular portion of an experiment (to clip
-# off unused data from beginnning and end).
+# 
+
+#' Subsetting data by time
+#' 
+#' This function subsets your data to correspond to a certain time interval. Use
+#' this function to subset out a particular portion of an experiment (to clip 
+#' off unused data from beginnning and end).
+#' 
+#' @param obj A valid DAM object (created by newExperiment()).
+#'   
+#' @param startTime The starting point to include.
+#'   
+#' @param expDuration The duration of time you wish to include.
+#'   
+#' @param units The units of time you are using. Can be one of the following:
+#'   "days", "hours", "minutes", or "seconds."
+#'   
+#' @return Returns a DAM S4 object.
+#'   
+#' @export
+#' 
+#' @examples
+#' returnedDAM <- subset(DAM, startTime = 1, expDuration = 3, units = "days")
+#' 
 setGeneric("subsetTime", function(obj, startTime, expDuration, units) {
   standardGeneric("subsetTime")
 })
