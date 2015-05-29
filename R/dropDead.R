@@ -1,5 +1,17 @@
-# gets rid of animals that died during an experiment threshold is number of last
-# indices that death must have occured before before it is counted
+#' Automatically remove dead animals
+#' 
+#' This method gets rid of animals that died during an experiment. Death is
+#' detected using the \code{\link{calcSurvivalTime}} method.
+#' 
+#' @seealso \code{\link{calcSurvivalTime}}
+#' 
+#' @param obj A valid DAM S4 object
+#'   
+#' @return A DAM S4 object
+#' @export
+#' 
+#' @examples
+#' notDead <- dropDead(DAM_DD)
 setGeneric("dropDead", function(obj) {standardGeneric("dropDead")})
 setMethod("dropDead", signature = "DAM",
           definition = function(obj) {

@@ -1,4 +1,15 @@
-# Determine measurement interval (in seconds)
+#' Determine measurement interval
+#' 
+#' This method calculates the time difference between measurements in your
+#' dataset.
+#' 
+#' @param obj A valid DAM S4 object.
+#'   
+#' @return Time interval between measurements in seconds.
+#' @export
+#' 
+#' @examples
+#' getInterval(DAM_DD)
 setGeneric("getInterval", function(obj) {standardGeneric("getInterval")})
 setMethod("getInterval", signature = "DAM",
           definition = function(obj) {

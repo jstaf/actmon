@@ -1,4 +1,12 @@
-# finds the lighting interval in hours
+#' Calculate the lighting interval
+#' 
+#' Automatically calculates the lighting interval of a dataset.
+#' 
+#' @param DAM A valid DAM S4 object
+#'
+#' @return The lighting interval (in hours)
+#' @export
+#'
 setGeneric("findLightInterval", function(DAM) {standardGeneric("findLightInterval")})
 setMethod("findLightInterval", signature = "DAM",
           definition = function(DAM) {

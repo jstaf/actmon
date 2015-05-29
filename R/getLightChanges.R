@@ -1,3 +1,13 @@
+#' Find light changes in a dataset
+#' 
+#' This is a utility method that returns indices where a Drosophila Activity
+#' Monitor detects a change in lighting status.
+#' 
+#' @param DAM A valid DAM S4 object
+#'   
+#' @return A vector of indices where light status changed.
+#' @export
+#' 
 setGeneric("getLightChanges", function(DAM) {standardGeneric("getLightChanges")})
 setMethod("getLightChanges", signature = "DAM",
           definition = function(DAM) {
@@ -13,7 +23,11 @@ setMethod("getLightChanges", signature = "DAM",
             # Which indices are dramatically shorter than others (probably day/light 
             # cycles that were broken up...)? 
             idx <- which(diff < (mean(diff) / 2))
-            streaks <- c(1, whichChanged(idx, 1), length(idx))
+            if (length(idx) > 1) {
+              streaks <- c(1, whichChanged(idx, 1), length(idx))
+            } else {
+              stop("No light changes detected.")
+            }
             
             # assemble more parsimonious indexes
             for (i in 2:length(streaks)) {
