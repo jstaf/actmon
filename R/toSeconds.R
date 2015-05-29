@@ -1,5 +1,14 @@
-# Converts "units" args in other functions to seconds.
-
+#' Convert a time to seconds
+#' 
+#' A utility function used to converts "units" args in other functions to
+#' seconds.
+#' 
+#' @param time
+#' @param units
+#'   
+#' @return time in seconds
+#' @export
+#' 
 toSeconds <- function(time, units = c("seconds", "minutes", "hours", "days")) {
   units <- match.arg(units)
 

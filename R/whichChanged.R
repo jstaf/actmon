@@ -1,4 +1,13 @@
-# find indices of which values which differed by more than a certain delta
+#' Find changes in a vector
+#' 
+#' Find indices of which values in a vector differed by more than a certain
+#' delta
+#' 
+#' @param vector
+#' @param delta
+#'   
+#' @return indices which changed more than delta
+#' 
 whichChanged <- function(vector, delta) {
   if (length(vector) >= 2) {
     changed <- rep(FALSE, length(vector))
