@@ -1,4 +1,21 @@
-# chop experiment down to complete days
+#' Synchronize experiment to its light cycle
+#' 
+#' This method syncs an experiment to a cycling light. This ensures that the
+#' start of each experimental day occurs at the same time that the lights switch
+#' on or off. Useful for plotting and subsetting your data by days.
+#' 
+#' @param DAM A valid DAM S4 experiment you wish to sync
+#' @param ...
+#' @param completeFirstDay A boolean value. If true, the first incomplete day in
+#'   the dataset is removed. If false, NAs are added to make an incomplete first
+#'   day have 24 full hours. Default: FALSE
+#' @param lightFirst A boolean value. If true, the experiment is synced so that 
+#'   light periods appear first (otherwise dark periods are first). Default: 
+#'   TRUE
+#'   
+#' @return Returns a DAM S4 object, synced by light cycle.
+#' @export
+#' 
 setGeneric("syncLightCycle", function(DAM, ..., completeFirstDay = FALSE, lightFirst = TRUE) {
   standardGeneric("syncLightCycle")
 })

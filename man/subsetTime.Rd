@@ -7,7 +7,7 @@
 subsetTime(obj, startTime, expDuration, units)
 }
 \arguments{
-\item{obj}{A valid DAM object (created by newExperiment()).}
+\item{obj}{A valid DAM object (created by \code{\link{newExperiment}}).}
 
 \item{startTime}{The starting point to include.}
 

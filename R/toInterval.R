@@ -1,8 +1,30 @@
-# collapse data to a certain time interval, aggregating by mean or sum
+#' Collapse a dataset to a target time interval
+#' 
+#' Use this function to change the time between measurements of a DAM dataset 
+#' (can only be used to increase the interval between measurements). When 
+#' compressing data to the new set of timepoints, data is aggreagated by either
+#' mean or sum.
+#' 
+#' @param obj A valid DAM experiment object
+#' @param target What time interval should the resulting dataset be?
+#' @param units The units used by the "target" parameter. Can be one of the 
+#'   following: "seconds", "minutes", "hours", "days"
+#' @param aggregateBy When aggregating multiple timepoints' worth of data, 
+#'   should data be averaged or summed? Can be one of the following: "sum", 
+#'   "average"
+#'   
+#' @return Returns a DAM S4 object, with measurments at the specified time 
+#'   interval.
+#' @export
+#' 
+#' @examples
+#' getInterval(DAM_DD)
+#' returnedDAM <- toInterval(DAM_DD, 1, units = "hours", aggregateBy = "sum")
+#' getInterval(returnedDAM)
 setGeneric("toInterval", function(obj, target, units, aggregateBy) {standardGeneric("toInterval")})
 setMethod("toInterval", signature = "DAM",
           definition = function(obj, target,
-                                units = c("seconds", "minutes", "hours"),
+                                units = c("seconds", "minutes", "hours", "days"),
                                 aggregateBy = c("sum", "average")) {
             #Parse args
             units <- match.arg(units)

@@ -1,4 +1,24 @@
 # applies the survival time function across columns
+
+#' Calculate time of death
+#' 
+#' This method determines at which point an animal died during an experiment. 
+#' This is computed by finding the last time period in which an animal moved. If
+#' an animal continued moving (and was alive) until the end of an experiment, 
+#' this function returns NA for that animal.
+#' 
+#' @param obj A valid DAM S4 object.
+#' @param ...
+#' @param endThresh An optional parameter specifying how long (in hours) an
+#'   animal must remain motionless before it can be considered "dead." Does not
+#'   affect the index of death.
+#'   
+#' @return Returns the index at which animals in a dataset died. Returns NAs for
+#'   animals that remained alive at experiment conclusion.
+#' @export
+#' 
+#' @examples
+#' calcSurvivalTime(DAM_DD)
 setGeneric("calcSurvivalTime", function(obj, ..., endThresh = 4) {standardGeneric("calcSurvivalTime")})
 setMethod("calcSurvivalTime", signature = "DAM",
           definition = function(obj, ..., endThresh) {
@@ -17,7 +37,17 @@ setMethod("calcSurvivalTime", signature = "DAM",
             return(survival)
           })
 
-# Computes the index at which a fly died in the data
+#' Computes the index at which a fly died in the data
+#' 
+#' The algorithm that computes time-of-death for flies in a DAM experiment.
+#' 
+#' @param vector A column of the dataset to operate on.
+#' @param threshold The threshold defines a base number of counts, below which
+#'   could be considered spurious counts. Designed to prevent a random count
+#'   here and there from affecting the time-of-death measurement.
+#'   
+#' @return Time-of-death (NA if fly was alive)
+#' 
 survivalTime <- function(vector, threshold) {
   zeroCounts <- which(vector < threshold)
   

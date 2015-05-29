@@ -1,5 +1,11 @@
-
-# formats data for plotting under either plotting method
+#' Reshape data in preparation for plotting
+#'
+#' Performs the necessary data reshaping before a plot can be made
+#'
+#' @param statsObj 
+#'
+#' @return A list of meta and plotting data.
+#'
 setGeneric("prepPlot", function(statsObj) {standardGeneric("prepPlot")})
 setMethod("prepPlot", signature = "DAMstats",
           definition = function(statsObj) {
@@ -24,7 +30,26 @@ setMethod("prepPlot", signature = "DAMstats",
             return(list(meta, plotData))
           })
 
-# makes a barplot (faceted if using multiple timepoints)
+#' Create a bar plot
+#' 
+#' Create a bar plot from calculated statistics (plots data means by attribute).
+#' Error bars represent the standard error of the mean. Plot is automatically
+#' faced if using multiple timepoints. Do not use this function for datasets
+#' with a large number of timepoints (use \code{\link{linePlot}} instead). All
+#' ggplot2 functions will work on the resulting plot.
+#' 
+#' @param statsObj A DAMstats obj (created by \code{\link{calcStats}})
+#'   
+#' @return A ggplot2 plot object.
+#' @export
+#' 
+#' @examples
+#' sleep <- dropDead(DAM_DD)
+#' sleep <- calcSleep(sleep)
+#' sleep <- toInterval(sleep, 24, units = "hours", aggregateBy = "average")
+#' sleep <- toAvgDay(sleep)
+#' stat <- calcStats(sleep, "genotype")
+#' barPlot(stat)
 setGeneric("barPlot", function(statsObj) {standardGeneric("barPlot")})
 setMethod("barPlot", signature = "DAMstats", 
           definition = function(statsObj) {
@@ -45,7 +70,28 @@ setMethod("barPlot", signature = "DAMstats",
             return(gg)
           })
           
-# makes a sweet line plot good for visualizing long timecourse data
+#' Create a line plot of the data
+#' 
+#' Creates a line plot of the data. Useful for datasets with a lot of 
+#' timepoints. Line datapoints represent the mean for that attribute. The 
+#' lightly colored regions represent the standard error of the mean. Grey/white
+#' areas of the background represent time periods where the lights were on/off.
+#' Most useful for datasets with a large number of timepoints.
+#' 
+#' @seealso For datasets with only a few timepoints, use \code{\link{barPlot}} 
+#'   instead.
+#'   
+#' @inheritParams barPlot
+#'   
+#' @return Returns a standard ggplot2 object.
+#' @export
+#' 
+#' @examples
+#' sleep <- dropDead(DAM_DD)
+#' sleep <- calcSleep(sleep)
+#' sleep <- toInterval(sleep, 1, units = "hours", aggregateBy = "average")
+#' stat <- calcStats(sleep, "genotype")
+#' barPlot(stat) 
 setGeneric("linePlot", function(statsObj) {standardGeneric("linePlot")})
 setMethod("linePlot", signature = "DAMstats", 
           definition = function(statsObj) {

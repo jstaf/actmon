@@ -1,4 +1,20 @@
-# flattens days to an average day... data from each individual fly is calculated separately
+#' Compute average day
+#' 
+#' Averages the data from multiple days to create an averaged "typical day."
+#' Data from each individual animal is handled separately.
+#' 
+#' @param DAM A valid DAM S4 experiment
+#' @param ...
+#' @param incomplete.rm A boolean value specifying whether incomplete days at 
+#'   the end of the dataset should not be included in the calculation. Default: 
+#'   TRUE
+#'   
+#' @return Returns a DAM S4 experiment containing one day's worth of averaged 
+#'   measurements.
+#' @export
+#' 
+#' @examples
+#' toAvgDay(DAM_DD)
 setGeneric("toAvgDay", function(DAM, ..., incomplete.rm = TRUE) {standardGeneric("toAvgDay")})
 setMethod("toAvgDay", signature = "DAM",
           definition = function(DAM, ..., incomplete.rm) {
