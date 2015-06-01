@@ -24,7 +24,7 @@ sleep <- dropDead(DAM_DD)
 sleep <- calcSleep(sleep)
 sleep <- toInterval(sleep, 1, units = "hours", aggregateBy = "average")
 stat <- calcStats(sleep, "genotype")
-barPlot(stat)
+linePlot(stat)
 }
 \seealso{
 For datasets with only a few timepoints, use \code{\link{barPlot}}

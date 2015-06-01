@@ -91,7 +91,7 @@ setMethod("barPlot", signature = "DAMstats",
 #' sleep <- calcSleep(sleep)
 #' sleep <- toInterval(sleep, 1, units = "hours", aggregateBy = "average")
 #' stat <- calcStats(sleep, "genotype")
-#' barPlot(stat) 
+#' linePlot(stat) 
 setGeneric("linePlot", function(statsObj) {standardGeneric("linePlot")})
 setMethod("linePlot", signature = "DAMstats", 
           definition = function(statsObj) {
