@@ -1,8 +1,8 @@
 Package: actMon
 Type: Package
 Title: A tool for parsing output produced by TriKinetics' Drosophila Activity Monitor.
-Version: 0.1
-Date: 2015-04-16
+Version: 0.2
+Date: 2015-06-01
 Author: Jeff Stafford
 Maintainer: Jeff Stafford <stafford@zoology.ubc.ca>
 Description: This package provides a set of functions and workflows that enables
