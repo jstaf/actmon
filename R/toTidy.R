@@ -14,7 +14,7 @@
 #' tidy <- toTidy(DAM_DD)
 setGeneric("toTidy", def = function(obj) {standardGeneric("toTidy")})
 setMethod("toTidy", signature = "DAM",
-          definition = function(obj, attribute) {
+          definition = function(obj) {
             # reshape obj@data into long format
             excl <- which(colnames(obj@data) %in% c("status", "extra_readings", "unused", "unused.1", "unused.2", "unused.3", "light_status"))
             dat <- obj@data[,-excl]
