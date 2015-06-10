@@ -2,7 +2,6 @@ library(plyr)
 
 # plot a single vector of values using the metadata from the object it was produced by
 vectorPlot <- function(vector, obj, attribute) {
-  vector[27] = 0
   df <- data.frame(vialNum = names(vector),
                    attr = obj@sample_info[, which(colnames(obj@sample_info) == attribute)],
                    values = vector)

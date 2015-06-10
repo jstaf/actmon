@@ -39,7 +39,9 @@ setGeneric("calcMeanBout", function(obj) {standardGeneric("calcMeanBout")})
 setMethod("calcMeanBout", signature = "DAM",
           definition = function(obj) {
             bouts <- getSleepBouts(obj)
-            return(unlist(lapply(bouts, mean)))
+            bouts <- unlist(lapply(bouts, mean))
+            bouts[is.na(bouts)] <- 0 # for flies that never sleep
+            return(bouts)
           })
 
 #' Calculate duration and number of sleep bouts
