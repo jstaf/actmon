@@ -11,7 +11,7 @@ install.packages("devtools")
 
 If you are on Windows, building R packages from source requires installing RTools. You can get it from [here](http://cran.r-project.org/bin/windows/Rtools/). Make sure you get the correct version of RTools for your version of R (you can check your version of R from the message you get on starting a new R session).
 
-### Installing actMon
+### Installing actmon
 Type the following into the R console:
 ```{r}
 devtools::install_github("kazi11/actmon")
