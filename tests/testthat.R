@@ -1,4 +1,4 @@
 library(testthat)
-library(actMon)
+library(actmon)
 
-test_check("actMon")
+test_check("actmon")
