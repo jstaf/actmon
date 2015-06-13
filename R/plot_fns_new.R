@@ -1,18 +1,25 @@
 # new plotting functions that use a sensible data format
 
-#' Prepare data for plotting
+#' Calculate average values by attribute
 #' 
-#' @param obj
-#' @param attribute
+#' This function is used to calculate the average values 
+#' (sleep/activity/whatever) of your data by an attribute. For instance, this
+#' could be used to calculate the average sleep values for each genotype.
+#' 
+#' @param obj A valid DAM S4 object (created by \code{\link{newExperiment}})
+#' @param attribute Which attribute you would like to use to analyze your data 
+#'   by, e.g. "genotype"
 #'   
-#' @return A matrix of values with the average and sem for each attribute
+#' @return A matrix of values with the average and standard error for each attribute 
 #'   category
 #' @export
 #' 
 #' @examples
-#' DAM_DD
-setGeneric("prepPlot2", def = function(obj, attribute) {standardGeneric("prepPlot2")})
-setMethod("prepPlot2", signature = c("DAM", "character"),
+#' sleep <- dropDead(DAM_DD)
+#' sleep <- calcSleep(sleep)
+#' calcAttribMeans(sleep, "genotype")
+setGeneric("calcAttribMeans", def = function(obj, attribute) {standardGeneric("calcAttribMeans")})
+setMethod("calcAttribMeans", signature = c("DAM", "character"),
           definition = function(obj, attribute) {
             dat <- toTidy(obj)
             plotData <- plyr::ddply(dat, c(attribute, "read_index"), plyr::summarise,
@@ -24,10 +31,35 @@ setMethod("prepPlot2", signature = c("DAM", "character"),
             return(plotData)
           })
 
-setGeneric("barPlot2", def = function(obj, attribute) {standardGeneric("barPlot2")})
-setMethod("barPlot2", signature = c("DAM", "character"), 
+#' Create a bar plot of an experiment
+#' 
+#' Create a bar plot from calculated statistics (plots data means by attribute).
+#' Error bars represent the standard error of the mean. Plot is automatically
+#' faced if using multiple timepoints. Do not use this function for datasets
+#' with a large number of timepoints (use \code{\link{linePlot}} instead). All
+#' ggplot2 functions will work on the resulting plot.
+#'
+#' @inheritParams linePlot
+#' @param vector A vector of values, with one for each animal in the experiment
+#'
+#' @return Returns a ggplot2 plot object
+#' @export
+#'
+#' @examples
+#' sleep <- dropDead(DAM_DD)
+#' sleep <- calcSleep(sleep)
+#' sleep <- toInterval(sleep, 12, units = "hours", aggregateBy = "average")
+#' sleep <- toAvgDay(sleep)
+#' barPlot(sleep, "genotype")
+#' 
+#' sleep <- dropDead(DAM_DD)
+#' sleep <- calcSleep(sleep)
+#' bouts <- calcMeanBout(sleep)
+#' barPlot(sleep, "genotype", vector = bouts)
+setGeneric("barPlot", def = function(obj, attribute, ..., vector) {standardGeneric("barPlot")})
+setMethod("barPlot", signature = c("DAM", "character"), 
           definition = function(obj, attribute) {
-            plotData <- prepPlot2(obj, attribute)
+            plotData <- calcAttribMeans(obj, attribute)
             
             # create the plot
             gg <- ggplot2::ggplot(data = plotData, ggplot2::aes(x = attr,
@@ -38,25 +70,60 @@ setMethod("barPlot2", signature = c("DAM", "character"),
               ggplot2::facet_wrap(~read_index) +
               ggplot2::geom_bar(stat = "identity", width = 0.8) +
               ggplot2::geom_errorbar(width = 0.4) +
-              ggplot2::guides(fill = FALSE) + xlab("") + # erase redundant labels
+              ggplot2::guides(fill = FALSE) + ggplot2::xlab("") + # erase redundant labels
+              ggplot2::theme_bw() +
+              ggplot2::theme(text = ggplot2::element_text(size = 14))
+            return(gg)
+          })
+
+# an extra "bonus" method to plot vectors of data generated from a DAM object like sleep bouts
+setMethod("barPlot", signature = c("DAM", "character", "numeric"),
+          definition = function(obj, attribute, vector) {
+            df <- data.frame(vialNum = names(vector),
+                             attr = obj@sample_info[, which(colnames(obj@sample_info) == attribute)],
+                             values = vector)
+            plotData <- plyr::ddply(df, .(attr), plyr::summarise,
+                                    AVG = mean(values), SEM = stdError(values))
+            
+            gg <- ggplot2::ggplot(plotData, ggplot2::aes(x = attr,
+                                                         y = AVG,
+                                                         ymin = AVG - SEM,
+                                                         ymax = AVG + SEM,
+                                                         fill = attr)) +
+              ggplot2::geom_bar(stat = "identity", width = 0.8) + #, position = "dodge") +
+              ggplot2::geom_errorbar(width = 0.4) + #, position = "dodge") +
+              ggplot2::guides(fill = FALSE) +
               ggplot2::theme_bw()
             return(gg)
           })
 
+
 #' Create a line plot of an experiment
 #'
-#' @param obj 
-#' @param attribute 
+#' Creates a line plot of the data. Useful for datasets with a lot of 
+#' timepoints. Line datapoints represent the mean for that attribute. The 
+#' lightly colored regions represent the standard error of the mean. Grey/white
+#' areas of the background represent time periods where the lights were on/off.
+#' Most useful for datasets with a large number of timepoints.
+#' 
+#' @seealso For datasets with only a few timepoints, use \code{\link{barPlot}} 
+#'   instead.
+#'
+#' @param obj A valid DAM S4 object
+#' @param attribute The attribute of the data you wish to examine (like "genotype")
 #'
 #' @return Returns a ggplot2 plot object
 #' @export 
 #'
 #' @examples
-#' DAM_DD
-setGeneric("linePlot2", def = function(obj, attribute) {standardGeneric("linePlot2")})
-setMethod("linePlot2", signature = c("DAM", "character"),
+#' sleep <- dropDead(DAM_DD)
+#' sleep <- calcSleep(sleep)
+#' sleep <- toInterval(sleep, 1, units = "hours", aggregateBy = "average")
+#' linePlot(stat, "genotype") 
+setGeneric("linePlot", def = function(obj, attribute) {standardGeneric("linePlot")})
+setMethod("linePlot", signature = c("DAM", "character"),
           definition = function(obj, attribute) {
-            plotData <- prepPlot2(obj, attribute)
+            plotData <- calcAttribMeans(obj, attribute)
             
             #TODO copy pasted... need to fix
             temp <- unique(na.omit(plotData$read_index))
