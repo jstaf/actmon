@@ -2,11 +2,11 @@
 
 export(barPlot)
 export(byAttribute)
+export(calcANOVA)
 export(calcAttribMeans)
 export(calcMeanBout)
 export(calcNumBouts)
 export(calcSleep)
-export(calcStats)
 export(calcSurvivalTime)
 export(catExperiments)
 export(dropAnimals)
