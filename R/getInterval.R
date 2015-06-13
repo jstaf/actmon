@@ -13,12 +13,16 @@
 setGeneric("getInterval", function(obj) {standardGeneric("getInterval")})
 setMethod("getInterval", signature = "DAM",
           definition = function(obj) {
-            # remove nas
-            temp <- na.omit(obj@data)
-            idxDiff <- temp[2, 1] - temp[1, 1]
-            if (is.na(idxDiff) || (idxDiff < 1)) {
-              stop("Something is wrong with the first few read indices of your data.")
+            if (length(temp[, 1]) <= 1) {
+              stop("Interval cannot be calculated if there are less than two datapoints.")
+            } else {
+              # remove nas
+              temp <- na.omit(obj@data)
+              idxDiff <- temp[2, 1] - temp[1, 1]
+              if (is.na(idxDiff) || (idxDiff < 1)) {
+                stop("Something is wrong with the first few read indices of your data.")
+              }
+              
+              return(as.numeric(difftime(temp[2, 2], temp[1, 2], units = "secs")) / idxDiff)
             }
-            
-            return(as.numeric(difftime(temp[2, 2], temp[1, 2], units = "secs")) / idxDiff)
           })
