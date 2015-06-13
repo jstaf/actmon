@@ -26,8 +26,13 @@ setMethod("calcAttribMeans", signature = c("DAM", "character"),
                                     AVG = mean(value), SEM = stdError(value))
             # avoid confusing ggplot... use a standard column name
             colnames(plotData)[1] <- "attr"
-            # convert read_index to hours
-            plotData$read_index <- plotData$read_index * getInterval(obj) / 3600
+            
+            # catch datasets with length of 1
+            if (length(plotData$read_index) > 1) {
+              # convert read_index to hours
+              plotData$read_index <- plotData$read_index * getInterval(obj) / 3600
+            }
+            
             # reorder factor levels to order in which they appear
             plotData$attr <- factor(plotData$attr, levels = unique(listAttribVals(obj, attribute)))
             return(plotData)
