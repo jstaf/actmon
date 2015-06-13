@@ -3,6 +3,7 @@
 export(barPlot)
 export(byAttribute)
 export(calcANOVA)
+export(calcActivityIndex)
 export(calcAttribMeans)
 export(calcMeanBout)
 export(calcNumBouts)
