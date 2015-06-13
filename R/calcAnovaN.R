@@ -1,3 +1,32 @@
+#' Calculate statistics for a dataset
+#' 
+#' A 1-way ANOVA is performed across an attribute on data with a single 
+#' timepoint. A 2-way ANOVA is performed across an attribute on data with 
+#' multiple timepoints (this will take quite awhile if done on data with 
+#' an extreme number of timepoints). Note that a 1-way ANOVA is statistically
+#' identical to a two-sample t-test when there are only two sample groups.
+#' 
+#' @param obj A valid DAM object (created by \code{\link{newExperiment}}
+#' @param attribute Which attribute stats should be calculated against.
+#'   
+#' @return Returns 
+#' @export
+#' 
+#' @examples
+#' activity <- toInterval(DAM_DD, 1, units = "hours", aggregateBy = "sum")
+#' statsAct <- calcStats(activity, "genotype")
+setGeneric("calcANOVA", function(obj, attribute) {standardGeneric("calcANOVA")})
+setMethod("calcANOVA", signature = "DAM",
+          definition = function(obj, attribute){
+            # okay do a one-way anova if there's only one row
+            if (length(obj@data[, 1]) == 1) {
+              calcAnova1(obj, 1, attribute)
+            } else {
+              calcAnova2(obj, attribute)
+            }
+            return()
+          })
+
 # compute 1-way ANOVA, return which comparisons gave p <= 0.05
 setGeneric("calcAnova1", function(obj, row, attribute) {standardGeneric("calcAnova1")})
 setMethod("calcAnova1", signature = c("DAM", "numeric", "character"), 
