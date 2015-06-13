@@ -59,7 +59,22 @@ setMethod("calcAnova2", signature = c("DAM", "character"),
             return(model)
           })
 
-# pvals <- do.call(rbind, TukeyHSD(model))
-# # take only pvals <= 0.05
-# pvals <- pvals[pvals[, "p adj"] <= 0.05, ]
-# print(pvals)
+#' Run a Tukey HSD post-hoc test
+#'
+#' This is a convenience function designed to print out all of the significant 
+#' comparisons (p < 0.05) from an ANOVA model
+#'
+#' @param aov An ANOVA model
+#'  
+#' @return Returns all of the significant 
+#' @export
+#'
+setGeneric("calcTukeyHSD", function(aov) {standardGeneric("calcTukeyHSD")})
+setMethod("calcTukeyHSD", signature = c("aov"), 
+          definition = function(aov) {
+            pvals <- TukeyHSD(aov)
+            # take only pvals <= 0.05
+            pvals <- pvals[pvals[, "p adj"] <= 0.05, ]
+            return(pvals)
+          })
+
