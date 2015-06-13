@@ -41,17 +41,20 @@ setMethod("calcAttribMeans", signature = c("DAM", "character"),
 #' Create a bar plot of an experiment
 #' 
 #' Create a bar plot from calculated statistics (plots data means by attribute).
-#' Error bars represent the standard error of the mean. Plot is automatically
-#' faced if using multiple timepoints. Do not use this function for datasets
-#' with a large number of timepoints (use \code{\link{linePlot}} instead). All
-#' ggplot2 functions will work on the resulting plot.
-#'
+#' Error bars represent the standard error of the mean. Plot is automatically 
+#' faced if using multiple timepoints. Do not use this function for datasets 
+#' with a large number of timepoints (use \code{\link{linePlot}} instead). All 
+#' ggplot2 functions will work on the resulting plot. If you want to plot a 
+#' vector of numeric values (like survival time or # of sleep bouts), supply the
+#' "vector" argument (of the values you wish to use) along with the
+#' obj/attribute the values were originally generated from.
+#' 
 #' @inheritParams linePlot
 #' @param vector A vector of values, with one for each animal in the experiment
-#'
+#'   
 #' @return Returns a ggplot2 plot object
 #' @export
-#'
+#' 
 #' @examples
 #' sleep <- dropDead(DAM_DD)
 #' sleep <- calcSleep(sleep)
