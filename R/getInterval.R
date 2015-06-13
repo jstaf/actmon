@@ -13,7 +13,7 @@
 setGeneric("getInterval", function(obj) {standardGeneric("getInterval")})
 setMethod("getInterval", signature = "DAM",
           definition = function(obj) {
-            if (length(temp[, 1]) <= 1) {
+            if (length(obj@data[, 1]) <= 1) {
               stop("Interval cannot be calculated if there are less than two datapoints.")
             } else {
               # remove nas
