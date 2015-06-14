@@ -20,12 +20,15 @@ setMethod("calcActivityIndex", signature = "DAM",
           })
 
 #internal function used to calculate activity index
+# activity index is the number of counts/day divided by the # of minutes awake/day
 activityIndex <- function(vector, interval) {
+  # total # of indices / portion of 1 day that an index represents
+  days <- length(vector) / (interval / 86400)
+  
   # remove points where the fly was alseep
   vector[vector == 0] <- NA
   
-  # NEED VALUES FOR INTERVAL FROM AARYA'S PAPER
-  interval <- interval / 3600
+  interval <- interval / 60
   timeAwake <- (length(vector[!is.na(vector)]) * interval)
   actIndex <- sum(vector, na.rm = TRUE) / timeAwake
   
