@@ -5,6 +5,7 @@
 #' @param vector 
 #'
 #' @return sem
+#' @export
 #'
 stdError <- function(vector) {
   sd(vector) / sqrt(length(vector))

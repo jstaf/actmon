@@ -93,7 +93,7 @@ setMethod("barPlot", signature = c("DAM", "character", "numeric"),
                              attr = obj@sample_info[, which(colnames(obj@sample_info) == attribute)],
                              values = vector)
             df$attr <- factor(df$attr, levels = unique(df$attr))
-            plotData <- plyr::ddply(df, .(attr), plyr::summarise,
+            plotData <- plyr::ddply(df, "attr", plyr::summarise,
                                     AVG = mean(values), SEM = stdError(values))
             
             gg <- ggplot2::ggplot(plotData, ggplot2::aes(x = attr,
@@ -136,7 +136,6 @@ setMethod("linePlot", signature = c("DAM", "character"),
           definition = function(obj, attribute) {
             plotData <- calcAttribMeans(obj, attribute)
             
-            #TODO copy pasted... need to fix
             temp <- unique(na.omit(plotData$read_index))
             breakSeq <- seq(0, length(temp), (12 / (temp[2] - temp[1])))
             
@@ -149,18 +148,19 @@ setMethod("linePlot", signature = c("DAM", "character"),
               ggplot2::geom_line() +
               ggplot2::geom_ribbon(alpha = 0.3, color = NA)
             
-            # TODO: need to somehow specify this before the colored line calls
             # ugly, but it works... retrieve maximum y axis value
             maxVal <- ggplot2::ggplot_build(gg)$panel$ranges[[1]]$y.range[2]
             xlim <- c(1, temp[length(temp)])
             
-            light_status <- (1 - obj@data$light_status) * maxVal            
-            light_status[light_status == 0] <- NA
-            gg <- gg + ggplot2::geom_ribbon(
-              mapping = ggplot2::aes(x = plotData$read_index[1:length(light_status)], 
-                                     y = 0, 
-                                     ymin = 0, 
-                                     ymax = light_status),
+            
+            light_df <- data.frame(read_index = obj@data$read_index,
+                                   light_status = (1 - obj@data$light_status) * maxVal)
+            #light_status[light_status == 0] <- NA
+            gg <- gg + ggplot2::geom_ribbon(data = light_df,
+                                            mapping = ggplot2::aes(x = read_index, 
+                                                                   y = 0, 
+                                                                   ymin = 0, 
+                                                                   ymax = light_status),
                                             alpha = 0.05, fill = "grey10", color = NA) +
               ggplot2::scale_y_continuous(limits = c(0, maxVal), expand = c(0,0)) +
               ggplot2::scale_x_continuous(breaks = breakSeq, labels = breakSeq,
