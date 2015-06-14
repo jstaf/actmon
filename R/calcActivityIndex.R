@@ -27,9 +27,11 @@ activityIndex <- function(vector, interval) {
   
   # remove points where the fly was alseep
   vector[vector == 0] <- NA
+  vector <- vector[!is.na(vector)]
   
+  #convert interval to minutes and compute activity index
   interval <- interval / 60
-  timeAwake <- (length(vector[!is.na(vector)]) * interval)
+  timeAwake <- (length(vector) * interval)
   actIndex <- sum(vector, na.rm = TRUE) / timeAwake
   
   return(actIndex)
