@@ -14,7 +14,7 @@ setGeneric("calcActivityIndex", function(obj) {standardGeneric("calcActivityInde
 setMethod("calcActivityIndex", signature = "DAM", 
           definition = function(obj) {
             vals <- getVals(obj@data)
-            indexes <- apply(vals, 2, activityIndex)
+            indexes <- apply(vals, 2, activityIndex, getInterval(obj))
             
             return(indexes)
           })
@@ -23,7 +23,7 @@ setMethod("calcActivityIndex", signature = "DAM",
 # activity index is the number of counts/day divided by the # of minutes awake/day
 activityIndex <- function(vector, interval) {
   # total # of indices / portion of 1 day that an index represents
-  days <- length(vector) / (interval / 86400)
+  # days <- length(vector) / (interval / 86400)
   
   # remove points where the fly was alseep
   vector[vector == 0] <- NA

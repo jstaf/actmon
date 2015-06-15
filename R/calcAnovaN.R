@@ -33,8 +33,9 @@ setMethod("calcANOVA", signature = c("DAM", "character", "numeric"),
             df <- data.frame(vialNum = names(vector),
                              attr = obj@sample_info[, which(colnames(obj@sample_info) == attribute)],
                              values = vector)
-            df$attr <- as.factor(attr)
+            df$attr <- as.factor(df$attr)
             model <- aov(df$values ~ df$attr)
+            print(summary(model))
             return(model)
           })
 
