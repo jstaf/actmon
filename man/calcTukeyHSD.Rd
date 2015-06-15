@@ -4,10 +4,12 @@
 \alias{calcTukeyHSD}
 \title{Run a Tukey HSD post-hoc test}
 \usage{
-calcTukeyHSD(aov)
+calcTukeyHSD(aov, ..., sig.only = FALSE)
 }
 \arguments{
-\item{aov}{An ANOVA model}
+\item{aov}{An ANOVA model (created with \code{\link{stats::aov}})}
+
+\item{sig.only}{Return only significant tests?}
 }
 \value{
 Returns all of the significant

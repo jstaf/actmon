@@ -20,12 +20,13 @@ setGeneric("calcANOVA", function(obj, attribute) {standardGeneric("calcANOVA")})
 setMethod("calcANOVA", signature = "DAM",
           definition = function(obj, attribute){
             # okay do a one-way anova if there's only one row
+            model <- NULL
             if (length(obj@data[, 1]) == 1) {
-              calcAnova1(obj, 1, attribute)
+              model <- calcAnova1(obj, 1, attribute)
             } else {
-              calcAnova2(obj, attribute)
+              model <- calcAnova2(obj, attribute)
             }
-            return()
+            return(model)
           })
 
 # compute 1-way ANOVA, return which comparisons gave p <= 0.05
@@ -64,17 +65,21 @@ setMethod("calcAnova2", signature = c("DAM", "character"),
 #' This is a convenience function designed to print out all of the significant 
 #' comparisons (p < 0.05) from an ANOVA model
 #'
-#' @param aov An ANOVA model
+#' @param aov An ANOVA model (created with \code{\link{stats::aov}})
+#' @param sig.only Return only significant tests?
 #'  
 #' @return Returns all of the significant 
 #' @export
 #'
-setGeneric("calcTukeyHSD", function(aov) {standardGeneric("calcTukeyHSD")})
+setGeneric("calcTukeyHSD", function(aov, ..., sig.only = FALSE) {standardGeneric("calcTukeyHSD")})
 setMethod("calcTukeyHSD", signature = c("aov"), 
-          definition = function(aov) {
+          definition = function(aov, ..., sig.only) {
             pvals <- TukeyHSD(aov)
-            # take only pvals <= 0.05
-            pvals <- pvals[pvals[, "p adj"] <= 0.05, ]
+            if (sig.only) {
+              # take only pvals <= 0.05
+              pvals <- lapply(pvals, function(element) {
+                element <- element[element[, 4] <= 0.05, ]
+              })
+            }
             return(pvals)
           })
-
