@@ -35,6 +35,7 @@ setMethod("calcANOVA", signature = c("DAM", "character", "numeric"),
                              values = vector)
             df$attr <- as.factor(attr)
             model <- aov(df$values ~ df$attr)
+            return(model)
           })
 
 # compute 1-way ANOVA, return which comparisons gave p <= 0.05
