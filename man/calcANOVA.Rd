@@ -4,7 +4,7 @@
 \alias{calcANOVA}
 \title{Calculate statistics for a dataset}
 \usage{
-calcANOVA(obj, attribute)
+calcANOVA(obj, attribute, ..., vector)
 }
 \arguments{
 \item{obj}{A valid DAM object (created by \code{\link{newExperiment}}}

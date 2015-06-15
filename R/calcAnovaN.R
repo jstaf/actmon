@@ -16,8 +16,8 @@
 #' activity <- toInterval(DAM_DD, 12, units = "hours", aggregateBy = "sum")
 #' activity <- toAvgDay(activity)
 #' statsAct <- calcStats(activity, "genotype")
-setGeneric("calcANOVA", function(obj, attribute) {standardGeneric("calcANOVA")})
-setMethod("calcANOVA", signature = "DAM",
+setGeneric("calcANOVA", function(obj, attribute, ..., vector) {standardGeneric("calcANOVA")})
+setMethod("calcANOVA", signature = c("DAM", "character"),
           definition = function(obj, attribute){
             # okay do a one-way anova if there's only one row
             model <- NULL
@@ -27,6 +27,14 @@ setMethod("calcANOVA", signature = "DAM",
               model <- calcAnova2(obj, attribute)
             }
             return(model)
+          })
+setMethod("calcANOVA", signature = c("DAM", "character", "numeric"), 
+          definition = function(obj, attribute, vector) {
+            df <- data.frame(vialNum = names(vector),
+                             attr = obj@sample_info[, which(colnames(obj@sample_info) == attribute)],
+                             values = vector)
+            df$attr <- as.factor(attr)
+            model <- aov(df$values ~ df$attr)
           })
 
 # compute 1-way ANOVA, return which comparisons gave p <= 0.05
