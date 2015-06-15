@@ -44,7 +44,11 @@ setMethod(f = "catExperiments", signature = "list",
               colnames(obj2@data)[lightsCol + 1:numVials] <- (last + 1):(last + numVials)
               
               # combine objects
-              obj1@sample_info <- rbind(obj1@sample_info, obj2@sample_info)
+              tryCatch(obj1@sample_info <- rbind(obj1@sample_info, obj2@sample_info),
+                       error = function(e) {
+                         print(e)
+                         stop("Sample info column names do not match. Aborting merge.")
+                       })
               
               # cut data down to smaller experiments' size THEN combine
               long1 <- length(obj1@data[, 1])
