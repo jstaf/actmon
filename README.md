@@ -44,6 +44,7 @@ label <- guide_legend(title = "Genotype")
 linePlot(activity, "genotype") + ylab("Activity (raw counts/hour)") +
   xlab("Time (hours)") + guides(fill = label, color = label)
 ```
+![Imgur](http://i.imgur.com/N8QmvDH.png)
 
 So we have an activity phenotype, what about sleep? Note that the graph background is auto-colored a light gray to correspond with the lighting in the incubator where this experiment was performed. Experiments with cycling lighting will have light changes visible in their graphs.
 
@@ -56,6 +57,7 @@ label <- guide_legend(title = "Genotype")
 linePlot(sleep, "genotype") + ylab("Percent of time asleep/hour") +
   xlab("Time (hours)") + guides(fill = label, color = label)
 ```
+![Imgur](http://i.imgur.com/E8iEoGw.png)
 
 Can we quantify that more precisely?
 
@@ -65,10 +67,14 @@ avgSleep <- toAvgDay(sleep, incomplete.rm = TRUE)
 avgSleep <- toInterval(avgSleep, 1, units = "days", aggregateBy = "average")
 barPlot(avgSleep, "genotype") + ylab("Percent of time asleep/hour") + xlab("Time (hours)")
 ```
+![Imgur](http://i.imgur.com/VQ3eo6g.png)
 
 What are the stats on that?
 ```{r}
 model <- calcANOVA(avgSleep, "genotype")
+```
+
+```{r}
 calcTukeyHSD(model)
 ```
 
@@ -79,15 +85,22 @@ rawSleep <- calcSleep(demoData)
 numBouts <- calcNumBouts(rawSleep)
 # Overloaded operators for plotting functions allow us to plot vectorized data along with metadata from the parent DAM object the vector was generated from
 barPlot(rawSleep, "genotype", vector = numBouts) + ylab("Mean number of sleep bouts") + xlab("")
+```
+![Imgur](http://i.imgur.com/cZH4Vqh.png)
 
+```{r}
 # Calculate mean duration of sleep bouts
 meanBouts <- calcMeanBout(rawSleep)
 barPlot(rawSleep, "genotype", vector = meanBouts) + ylab("Mean bout duration") + xlab("")
+```
+![Imgur](http://i.imgur.com/wAYZdsy.png)
 
+```{r}
 # Calculate activity index (activity normalized to time awake)
 activityIdx <- calcActivityIndex(demoData)
 barPlot(rawSleep, "genotype", vector = activityIdx) + ylab("Activity index") + xlab("")
 ```
+![Imgur](http://i.imgur.com/QKJZshS.png)
 
 Mean bout duration appears to have decreased in our experimental flies, and they appear to be more active in general. 
 
