@@ -1,33 +1,33 @@
 vial_number,genotype,sex
-1,experimental,0
-2,experimental,0
-3,experimental,0
-4,experimental,0
-5,experimental,0
-6,experimental,0
-7,experimental,1
-8,experimental,1
-9,experimental,1
-10,experimental,1
-11,experimental,1
-12,experimental,1
-13,control A,0
-14,control A,0
-15,control A,0
-16,control A,0
-17,control A,0
-18,control A,1
-19,control A,1
-20,control A,1
-21,control A,1
-22,control A,1
-23,control B,0
-24,control B,0
-25,control B,0
-26,control B,0
-27,control B,0
-28,control B,1
-29,control B,1
-30,control B,1
-31,control B,1
-32,control B,1
+1,control A,0
+2,control A,0
+3,control A,0
+4,control A,0
+5,control A,0
+6,control A,1
+7,control A,1
+8,control A,1
+9,control A,1
+10,control A,1
+11,control B,0
+12,control B,0
+13,control B,0
+14,control B,0
+15,control B,0
+16,control B,1
+17,control B,1
+18,control B,1
+19,control B,1
+20,control B,1
+21,experimental,0
+22,experimental,0
+23,experimental,0
+24,experimental,0
+25,experimental,0
+26,experimental,0
+27,experimental,1
+28,experimental,1
+29,experimental,1
+30,experimental,1
+31,experimental,1
+32,experimental,1
