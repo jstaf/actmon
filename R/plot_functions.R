@@ -28,7 +28,7 @@ setMethod("calcAttribMeans", signature = c("DAM", "character"),
             colnames(plotData)[1] <- "attr"
             
             # catch datasets with length of 1
-            if (length(plotData$read_index) > 1) {
+            if (length(unique(plotData$read_index)) > 1) {
               # convert read_index to hours
               plotData$read_index <- plotData$read_index * getInterval(obj) / 3600
             }
