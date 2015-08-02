@@ -35,10 +35,15 @@ library(ggplot2) # Needed for some plotting helper functions (i.e. labels)
 # Remove dead animals from our example dataset
 demoData <- dropDead(DAM_DD)
 
+## [1] "Vial # 28 have been detected as dead and will be dropped."
+
 # Collapse our data to one data point per hour (instead of one every 5min), aggregating by sum
 activity <- toInterval(demoData, 1, units = "hours", aggregateBy = "sum")
 # Which "attribute" of our metadata (like genotype) do we want to examine our data by?
 listAttributes(activity)
+
+## [1] "vial_number" "genotype"    "sex"
+
 # Make a plot using actmons's built in ggplot2 functionality.
 label <- guide_legend(title = "Genotype")
 linePlot(activity, "genotype") + ylab("Activity (raw counts/hour)") +
@@ -72,10 +77,25 @@ barPlot(avgSleep, "genotype") + ylab("Percent of time asleep/hour") + xlab("Time
 What are the stats on that?
 ```{r}
 model <- calcANOVA(avgSleep, "genotype")
-```
 
-```{r}
+##             Df Sum Sq Mean Sq F value   Pr(>F)    
+## attributes   2   7081    3541   19.78 4.41e-06 ***
+## Residuals   28   5012     179                     
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
 calcTukeyHSD(model)
+
+##   Tukey multiple comparisons of means
+##     95% family-wise confidence level
+## 
+## Fit: aov(formula = dat ~ attributes)
+## 
+## $attributes
+##                              diff       lwr        upr     p adj
+## control B-control A     -7.928241 -22.73264   6.876157 0.3934604
+## experimental-control A -34.843224 -49.30725 -20.379202 0.0000060
+## experimental-control B -26.914983 -41.37900 -12.450962 0.0002348
 ```
 
 It's significant! Awesome. What about other measures of activity sleep behavior?
@@ -83,8 +103,10 @@ It's significant! Awesome. What about other measures of activity sleep behavior?
 # Calculate number of sleep bouts
 rawSleep <- calcSleep(demoData)
 numBouts <- calcNumBouts(rawSleep)
-# Overloaded operators for plotting functions allow us to plot vectorized data along with metadata from the parent DAM object the vector was generated from
-barPlot(rawSleep, "genotype", vector = numBouts) + ylab("Mean number of sleep bouts") + xlab("")
+# Overloaded operators for plotting functions allow us to plot vectorized data along 
+# with metadata from the parent DAM object the vector was generated from.
+barPlot(rawSleep, "genotype", vector = numBouts) + ylab("Mean number of sleep bouts") +
+  xlab("")
 ```
 ![Imgur](http://i.imgur.com/cZH4Vqh.png)
 
