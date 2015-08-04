@@ -36,7 +36,17 @@ library(ggplot2) # Needed for some plotting helper functions (i.e. labels)
 demoData <- dropDead(DAM_DD)
 
 ## [1] "Vial # 28 have been detected as dead and will be dropped."
+```
 
+Note that we are just using the demo data for the above example. To create a DAM experiment object from your own data, you would use the following syntax:
+
+```{r}
+yourData <- newExperiment(dataFile = "filePath/yourActivityMonitorOutput.txt", infoFile = "filePath/yourMetadata.csv")
+```
+
+Note that the metadata files are simply a csv file with the genotype/conditions of each animal. See the `example_smpinfo.csv` file in this repository as an example of what one should look like. There are no requirements of the file aside from that first row supplies column labels, and the first column be the numbers 1-32. Anyhow, back to the workflow...
+
+```{r}
 # Collapse our data to one data point per hour (instead of one every 5min), aggregating by sum
 activity <- toInterval(demoData, 1, units = "hours", aggregateBy = "sum")
 # Which "attribute" of our metadata (like genotype) do we want to examine our data by?
