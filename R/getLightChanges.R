@@ -25,30 +25,40 @@ setMethod("getLightChanges", signature = "DAM",
             idx <- which(diff < (mean(diff) / 2))
             if (length(idx) > 1) {
               streaks <- c(1, whichChanged(idx, 1), length(idx))
+            } else if (length(idx) == 1) {
+              # only occurs if only the start or ending index was less than the
+              # mean
+              streaks <- idx
             } else {
               stop("No light changes detected.")
             }
             
             # assemble more parsimonious indexes
-            for (i in 2:length(streaks)) {
-              # Combine streaks of smaller values
-              if (i != length(streaks)) {
-                idxInStreak <- streaks[i - 1]:(streaks[i] - 1)
-              } else {
-                # need to grab the last index here
-                idxInStreak <- streaks[i - 1]:streaks[i]
+            if (length(streaks) > 1) {
+              for (i in 2:length(streaks)) {
+                # Combine streaks of smaller values
+                if (i != length(streaks)) {
+                  idxInStreak <- streaks[i - 1]:(streaks[i] - 1)
+                } else {
+                  # need to grab the last index here
+                  idxInStreak <- streaks[i - 1]:streaks[i]
+                }
+                streakSum <- sum(idx[idxInStreak])
+                
+                # now find which "side" to add the streak sum to
+                left <- idx[idxInStreak[1]] - 1
+                right <- idx[idxInStreak[length(idxInStreak)]] + 1
+                if (left < right) {
+                  diff[left] <- diff[left] + streakSum
+                } else {
+                  diff[right] <- diff[right] + streakSum
+                }
               }
-              streakSum <- sum(idx[idxInStreak])
-              
-              # now find which "side" to add the streak sum to
-              left <- idx[idxInStreak[1]] - 1
-              right <- idx[idxInStreak[length(idxInStreak)]] + 1
-              if (left < right) {
-                diff[left] <- diff[left] + streakSum
-              } else {
-                diff[right] <- diff[right] + streakSum
-              }
+              # remove the small value streaks from diff
+              return(diff[-idx])
+            } else {
+              # if there's only one element, its likely at the start/end and we
+              # shouldn't remove it
+              return(diff)
             }
-            # remove the small value streaks from diff
-            return(diff[-idx])
           })

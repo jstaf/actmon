@@ -38,13 +38,20 @@ setMethod("syncLightCycle", signature = "DAM",
             if (!completeFirstDay) {
               # how many NANs do we need to make
               toCreate <- (idxPerHour * 12) - first
-              if (toCreate > 0) {
+              
+              # ensure that extra time is still added if toCreate is negative
+              if (toCreate < 0) {
+                toCreate <- toCreate + (24 * idxPerHour)
+              }
+              
+              if (toCreate != 0) {
                 dummy <- as.data.frame(matrix(nrow = toCreate, ncol = dim(DAM@data)[2]))
                 colnames(dummy) <- colnames(DAM@data)
                 # need to format dummy's dates as posixctlength(DAM@data$read_index) %/% dayLength
                 dummy$read_time <- as.POSIXct(dummy$read_time)
                 
                 DAM@data <- rbind(dummy, DAM@data)
+                DAM@data$read_index <- 1:length(DAM@data$read_index)
               }
               # we're going to take the whole dataset start now
               first <- 0
