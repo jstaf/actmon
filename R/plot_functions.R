@@ -139,6 +139,9 @@ setMethod("linePlot", signature = c("DAM", "character"),
             temp <- unique(na.omit(plotData$read_index))
             breakSeq <- seq(0, length(temp), (12 / (temp[2] - temp[1])))
             
+            # index 1 is treated as index 0 for this plot
+            plotData$read_index <- plotData$read_index - 1
+            
             gg <- ggplot2::ggplot(plotData, ggplot2::aes(x = read_index,
                                                          y = AVG,
                                                          ymin = AVG - SEM,
@@ -150,12 +153,16 @@ setMethod("linePlot", signature = c("DAM", "character"),
             
             # ugly, but it works... retrieve maximum y axis value
             maxVal <- ggplot2::ggplot_build(gg)$panel$ranges[[1]]$y.range[2]
-            xlim <- c(1, temp[length(temp)])
+            xlim <- c(0, temp[length(temp)] - 1)
             
-            
+            # fix the light graphing
             light_df <- data.frame(read_index = obj@data$read_index,
                                    light_status = (1 - obj@data$light_status) * maxVal)
-            #light_status[light_status == 0] <- NA
+            # a bit of a hack to ensure things show up for exactly the proper duration
+            changes <- whichChanged(light_df$light_status, 1) - 1
+            light_df$light_status[changes] <- max(light_df$light_status)
+            light_df$light_status[light_df$light_status == 0] <- NA
+            
             gg <- gg + ggplot2::geom_ribbon(data = light_df,
                                             mapping = ggplot2::aes(x = read_index, 
                                                                    y = 0, 
@@ -171,7 +178,9 @@ setMethod("linePlot", signature = c("DAM", "character"),
                              panel.grid.major = ggplot2::element_line(colour = "white"),
                              panel.grid.minor = ggplot2::element_line(colour = "white")) +
               ggplot2::geom_hline(yintercept = 0) +
-              ggplot2::geom_vline(xintercept = 1)
+              ggplot2::geom_vline(xintercept = 0) + 
+              ggplot2::guides(fill = ggplot2::guide_legend(title = attribute),
+                              color = ggplot2::guide_legend(title = attribute))
             
             return(gg)
           })
