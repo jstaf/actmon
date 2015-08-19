@@ -48,6 +48,7 @@ setMethod("getLightChanges", signature = "DAM",
                 # does the index to the left of the streak exist
                 if (idx[idxInStreak[1]] - 1 > 0) {
                   left <- diff[idx[idxInStreak[1]] - 1]
+                  removeFirst <- FALSE
                 } else {
                   left <- 1
                   removeFirst <- TRUE

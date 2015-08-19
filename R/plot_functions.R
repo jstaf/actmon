@@ -136,11 +136,13 @@ setMethod("linePlot", signature = c("DAM", "character"),
           definition = function(obj, attribute) {
             plotData <- calcAttribMeans(obj, attribute)
             
+            # index 1 is treated as index 0 for this plot
+            plotData$read_index <- plotData$read_index - 1
+            
+            
             temp <- unique(na.omit(plotData$read_index))
             breakSeq <- seq(0, length(temp), (12 / (temp[2] - temp[1])))
             
-            # index 1 is treated as index 0 for this plot
-            plotData$read_index <- plotData$read_index - 1
             
             gg <- ggplot2::ggplot(plotData, ggplot2::aes(x = read_index,
                                                          y = AVG,
@@ -159,6 +161,7 @@ setMethod("linePlot", signature = c("DAM", "character"),
             light_df <- data.frame(read_index = obj@data$read_index,
                                    light_status = (1 - obj@data$light_status) * maxVal)
             # a bit of a hack to ensure things show up for exactly the proper duration
+            light_df$light_status[is.na(light_df$light_status)] <- 0
             changes <- whichChanged(light_df$light_status, 1) - 1
             light_df$light_status[changes] <- max(light_df$light_status)
             light_df$light_status[light_df$light_status == 0] <- NA
@@ -179,8 +182,8 @@ setMethod("linePlot", signature = c("DAM", "character"),
                              panel.grid.minor = ggplot2::element_line(colour = "white")) +
               ggplot2::geom_hline(yintercept = 0) +
               ggplot2::geom_vline(xintercept = 0) + 
-              ggplot2::guides(fill = ggplot2::guide_legend(title = attribute),
-                              color = ggplot2::guide_legend(title = attribute))
+              ggplot2::guides(fill = ggplot2::guide_legend(title = ""),
+                              color = ggplot2::guide_legend(title = ""))
             
             return(gg)
           })

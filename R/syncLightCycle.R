@@ -51,7 +51,6 @@ setMethod("syncLightCycle", signature = "DAM",
                 dummy$read_time <- as.POSIXct(dummy$read_time)
                 
                 DAM@data <- rbind(dummy, DAM@data)
-                DAM@data$read_index <- 1:length(DAM@data$read_index)
               }
               # we're going to take the whole dataset start now
               first <- 0
