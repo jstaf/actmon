@@ -24,7 +24,7 @@ setMethod("syncLightCycle", signature = "DAM",
             # First index is where we start cutting things
             tryCatch(first <- getLightChanges(DAM)[1],
                      error = function(e) {
-                       stop(paste(e, "Not enough light changes detected."))
+                       stop(paste(e, "Light detection failed."))
                      })
             idxPerHour <- 3600 / getInterval(DAM)
             

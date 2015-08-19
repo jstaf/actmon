@@ -26,8 +26,7 @@ setMethod("getLightChanges", signature = "DAM",
             if (length(idx) > 1) {
               streaks <- c(1, whichChanged(idx, 1), length(idx))
             } else if (length(idx) == 1) {
-              # only occurs if only the start or ending index was less than the
-              # mean
+              # occurs if only the start or ending index was less than the mean
               streaks <- idx
             } else {
               stop("No light changes detected.")
@@ -43,17 +42,35 @@ setMethod("getLightChanges", signature = "DAM",
                   # need to grab the last index here
                   idxInStreak <- streaks[i - 1]:streaks[i]
                 }
-                streakSum <- sum(idx[idxInStreak])
+                streakSum <- sum(diff[idxInStreak])
                 
                 # now find which "side" to add the streak sum to
-                left <- idx[idxInStreak[1]] - 1
-                right <- idx[idxInStreak[length(idxInStreak)]] + 1
+                # does the index to the left of the streak exist
+                if (idx[idxInStreak[1]] - 1 > 0) {
+                  left <- diff[idx[idxInStreak[1]] - 1]
+                } else {
+                  left <- 1
+                  removeFirst <- TRUE
+                }
+                
+                # does the area to the right of the streak exist?
+                if (!is.na(diff[idx[idxInStreak[length(idxInStreak)]] + 1])) {
+                  right <- diff[idx[idxInStreak[length(idxInStreak)]] + 1]
+                } else {
+                  right <- length(idx)
+                  idx <- idx[-length(idx)]
+                }
+                
                 if (left < right) {
                   diff[left] <- diff[left] + streakSum
                 } else {
                   diff[right] <- diff[right] + streakSum
                 }
               }
+              # remove first index after were done to prevent issues arising
+              # from concurrent modification
+              if (!is.na(removeFirst)) idx <- idx[-1]
+              
               # remove the small value streaks from diff
               return(diff[-idx])
             } else {
