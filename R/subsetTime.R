@@ -39,8 +39,13 @@ setMethod("subsetTime", signature = "DAM",
               expDuration <- floor(expDuration / interval) * interval
             }
             
-            # Okay subset out and return the data we want.
-            toReturn <- (startTime / interval):((startTime / interval) + (expDuration / interval))
+            # Okay subset out and return the data we want. 
+            toReturn <- (startTime / interval):((startTime / interval) + (expDuration / interval) - 1)
             obj@data <- obj@data[toReturn, ]
+            
+            # Clean up read indices
+            obj@data$read_index[!is.na(obj@data$read_index)] <- 
+              1:length(obj@data$read_index[!is.na(obj@data$read_index)])
+            
             return(obj)
           })

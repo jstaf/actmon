@@ -134,11 +134,12 @@ setMethod("barPlot", signature = c("DAM", "character", "numeric"),
 setGeneric("linePlot", def = function(obj, attribute) {standardGeneric("linePlot")})
 setMethod("linePlot", signature = c("DAM", "character"),
           definition = function(obj, attribute) {
+            # we are respecting NA read indexes and giving them a value
+            obj@data$read_index <- 1:length(obj@data$read_index)
             plotData <- calcAttribMeans(obj, attribute)
             
             # index 1 is treated as index 0 for this plot
             plotData$read_index <- plotData$read_index - 1
-            
             
             temp <- unique(na.omit(plotData$read_index))
             breakSeq <- seq(0, length(temp), (12 / (temp[2] - temp[1])))
