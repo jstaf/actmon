@@ -62,9 +62,10 @@ setMethod("toInterval", signature = "DAM",
               DAMobject$light_status[1:(length(DAMobject[,1]) - remainder)], nrow = scale))
             newDAM$light_status <- as.integer(round(matrix(newLights, nrow = numInt, ncol = 1)))
             
-            # Cleanup rownames/indices for future operations.
-            newDAM$read_index <- 1:length(newDAM$read_index)
-            rownames(newDAM) <- newDAM$read_index
+            # Cleanup rownames/indices for future operations. 
+            newDAM$read_index[!is.na(newDAM$read_index)] <- 
+              1:length(newDAM$read_index[!is.na(newDAM$read_index)])
+            rownames(newDAM) <- 1:length(newDAM$read_index)
             
             # Replace old object data
             obj@data <- newDAM
