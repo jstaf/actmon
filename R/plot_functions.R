@@ -82,7 +82,9 @@ setMethod("barPlot", signature = c("DAM", "character"),
               ggplot2::geom_errorbar(width = 0.4) +
               ggplot2::guides(fill = FALSE) + ggplot2::xlab("") + # erase redundant labels
               ggplot2::theme_bw() +
-              ggplot2::theme(text = ggplot2::element_text(size = 14))
+              ggplot2::theme(text = ggplot2::element_text(size = 14),
+                             panel.grid.major = ggplot2::element_line(colour = "white"),
+                             panel.grid.minor = ggplot2::element_line(colour = "white"))
             return(gg)
           })
 
@@ -106,7 +108,6 @@ setMethod("barPlot", signature = c("DAM", "character", "numeric"),
               ggplot2::guides(fill = FALSE) +
               ggplot2::theme_bw() + 
               ggplot2::theme(text = ggplot2::element_text(size = 14),
-                             panel.border = ggplot2::element_rect(colour = "white"),
                              panel.grid.major = ggplot2::element_line(colour = "white"),
                              panel.grid.minor = ggplot2::element_line(colour = "white"))
             return(gg)
