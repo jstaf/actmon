@@ -104,7 +104,11 @@ setMethod("barPlot", signature = c("DAM", "character", "numeric"),
               ggplot2::geom_bar(stat = "identity", width = 0.8) + #, position = "dodge") +
               ggplot2::geom_errorbar(width = 0.4) + #, position = "dodge") +
               ggplot2::guides(fill = FALSE) +
-              ggplot2::theme_bw()
+              ggplot2::theme_bw() + 
+              ggplot2::theme(text = ggplot2::element_text(size = 14),
+                             panel.border = ggplot2::element_rect(colour = "white"),
+                             panel.grid.major = ggplot2::element_line(colour = "white"),
+                             panel.grid.minor = ggplot2::element_line(colour = "white"))
             return(gg)
           })
 
