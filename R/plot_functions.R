@@ -144,7 +144,7 @@ setMethod("barPlot", signature = c("DAM", "character", "numeric"),
 #' sleep <- calcSleep(sleep)
 #' sleep <- toInterval(sleep, 1, units = "hours", aggregateBy = "average")
 #' linePlot(stat, "genotype") 
-setGeneric("linePlot", def = function(obj, attribute) {standardGeneric("linePlot")})
+setGeneric("linePlot", def = function(obj, attribute, ...) {standardGeneric("linePlot")})
 setMethod("linePlot", signature = c("DAM", "character"),
           definition = function(obj, attribute) {
             # we are respecting NA read indexes and giving them a value
