@@ -3,22 +3,24 @@
 #' Calculate average values by attribute
 #' 
 #' This function is used to calculate the average values 
-#' (sleep/activity/whatever) of your data by an attribute. For instance, this
+#' (sleep/activity/whatever) of your data by an attribute. For instance, this 
 #' could be used to calculate the average sleep values for each genotype.
 #' 
 #' @param obj A valid DAM S4 object (created by \code{\link{newExperiment}})
 #' @param attribute Which attribute you would like to use to analyze your data 
 #'   by, e.g. "genotype"
+#' @param vector A vector of values to use for mean calculation instead of using
+#'   those in actual DAM object obj.
 #'   
-#' @return A matrix of values with the average and standard error for each attribute 
-#'   category
+#' @return A matrix of values with the average and standard error for each
+#'   attribute category
 #' @export
 #' 
 #' @examples
 #' sleep <- dropDead(DAM_DD)
 #' sleep <- calcSleep(sleep)
 #' calcAttribMeans(sleep, "genotype")
-setGeneric("calcAttribMeans", def = function(obj, attribute) {standardGeneric("calcAttribMeans")})
+setGeneric("calcAttribMeans", def = function(obj, attribute, ..., vector) {standardGeneric("calcAttribMeans")})
 setMethod("calcAttribMeans", signature = c("DAM", "character"),
           definition = function(obj, attribute) {
             dat <- toTidy(obj)
@@ -35,6 +37,16 @@ setMethod("calcAttribMeans", signature = c("DAM", "character"),
             
             # reorder factor levels to order in which they appear
             plotData$attr <- factor(plotData$attr, levels = unique(listAttribVals(obj, attribute)))
+            return(plotData)
+          })
+setMethod("calcAttribMeans", signature = c("DAM", "character", "numeric"),
+          definition = function(obj, attribute, vector) {
+            df <- data.frame(vialNum = names(vector),
+                             attr = obj@sample_info[, which(colnames(obj@sample_info) == attribute)],
+                             values = vector)
+            df$attr <- factor(df$attr, levels = unique(df$attr))
+            plotData <- plyr::ddply(df, "attr", plyr::summarise,
+                                    AVG = mean(values), SEM = stdError(values))
             return(plotData)
           })
 
@@ -91,12 +103,8 @@ setMethod("barPlot", signature = c("DAM", "character"),
 # an extra "bonus" method to plot vectors of data generated from a DAM object like sleep bouts
 setMethod("barPlot", signature = c("DAM", "character", "numeric"),
           definition = function(obj, attribute, vector) {
-            df <- data.frame(vialNum = names(vector),
-                             attr = obj@sample_info[, which(colnames(obj@sample_info) == attribute)],
-                             values = vector)
-            df$attr <- factor(df$attr, levels = unique(df$attr))
-            plotData <- plyr::ddply(df, "attr", plyr::summarise,
-                                    AVG = mean(values), SEM = stdError(values))
+            val <- vector
+            plotData <- calcAttribMeans(obj, attribute, vector = val)
             
             gg <- ggplot2::ggplot(plotData, ggplot2::aes(x = attr,
                                                          y = AVG,
