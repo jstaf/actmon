@@ -33,6 +33,13 @@ setClass("DAM", slots = c(data = "data.frame", sample_info = "data.frame"))
 newExperiment <- function(dataFile = NULL, infoFile = NULL) {
   if (is.character(dataFile)) dataFile <- parseDAM(dataFile)
   if (is.character(infoFile)) infoFile <- read.csv(infoFile)
+  
+  # convert factor ordering to the order in which they appear in the dataset
+  for (colNum in 2:dim(infoFile)[2]) {
+    if (is.factor(infoFile[, colNum])) {
+      infoFile[, colNum] <- factor(infoFile[, colNum], levels = unique(infoFile[, colNum]))
+    }
+  }
   new("DAM", data = dataFile, sample_info = infoFile)
 }
 

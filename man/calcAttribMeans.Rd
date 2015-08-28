@@ -4,17 +4,20 @@
 \alias{calcAttribMeans}
 \title{Calculate average values by attribute}
 \usage{
-calcAttribMeans(obj, attribute)
+calcAttribMeans(obj, attribute, ..., vector)
 }
 \arguments{
 \item{obj}{A valid DAM S4 object (created by \code{\link{newExperiment}})}
 
 \item{attribute}{Which attribute you would like to use to analyze your data
-  by, e.g. "genotype"}
+by, e.g. "genotype"}
+
+\item{vector}{A vector of values to use for mean calculation instead of using
+  those in actual DAM object obj.}
 }
 \value{
-A matrix of values with the average and standard error for each attribute
-  category
+A matrix of values with the average and standard error for each
+  attribute category
 }
 \description{
 This function is used to calculate the average values

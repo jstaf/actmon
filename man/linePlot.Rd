@@ -4,7 +4,7 @@
 \alias{linePlot}
 \title{Create a line plot of an experiment}
 \usage{
-linePlot(obj, attribute)
+linePlot(obj, attribute, ...)
 }
 \arguments{
 \item{obj}{A valid DAM S4 object}
