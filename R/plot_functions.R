@@ -35,16 +35,18 @@ setMethod("calcAttribMeans", signature = c("DAM", "character"),
               plotData$read_index <- plotData$read_index * getInterval(obj) / 3600
             }
             
-            # reorder factor levels to order in which they appear
-            #plotData$attr <- factor(plotData$attr, levels = unique(listAttribVals(obj, attribute)))
+            # reorder factor levels to order in which they appear in the source dataset
+            plotData$attr <- factor(plotData$attr, 
+                                    levels = levels(listAttribVals(obj, attribute)))
             return(plotData)
           })
 setMethod("calcAttribMeans", signature = c("DAM", "character", "numeric"),
           definition = function(obj, attribute, vector) {
+            col <- which(colnames(obj@sample_info) == attribute)
             df <- data.frame(vialNum = names(vector),
-                             attr = obj@sample_info[, which(colnames(obj@sample_info) == attribute)],
+                             attr = obj@sample_info[, col],
                              values = vector)
-            #df$attr <- factor(df$attr, levels = unique(df$attr))
+            df$attr <- factor(df$attr, levels = levels(obj@sample_info[, col]))
             plotData <- plyr::ddply(df, "attr", plyr::summarise,
                                     AVG = mean(values), SEM = stdError(values))
             return(plotData)
