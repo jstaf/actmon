@@ -30,5 +30,10 @@ setMethod("toTidy", signature = "DAM",
             rownames(meta) <- NULL
             dat <- cbind(meta, dat)
             
+            # required if the metadata only has two columns
+            if (length(colnames(obj@sample_info)) == 2) {
+              colnames(dat)[1] <- colnames(obj@sample_info)[2]
+            }
+            
             return(dat)
           })
