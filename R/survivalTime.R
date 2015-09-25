@@ -49,6 +49,8 @@ setMethod("calcSurvivalTime", signature = "DAM",
 #' @return Time-of-death (NA if fly was alive)
 #' 
 survivalTime <- function(vector, threshold) {
+  # make NA safe for use after syncLightCycle()
+  vector <- vector[!is.na(vector)]
   zeroCounts <- which(vector < threshold)
   
   if (length(zeroCounts) == length(vector) || 
@@ -63,7 +65,8 @@ survivalTime <- function(vector, threshold) {
     streaks <- whichChanged(zeroCounts, 1)
     
     # all following values after the last streak must be less than the movement threshold
-    isAlive <- any(vector[zeroCounts[streaks[length(streaks)]]]:vector[length(vector)] > threshold)
+    isAlive <- any(vector[zeroCounts[streaks[length(streaks)]]]:
+                     vector[length(vector)] > threshold)
     if (isAlive) {
       ans <- NA
     } else {

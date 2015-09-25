@@ -17,8 +17,10 @@ setMethod("calcNumBouts", signature = "DAM",
             bouts <- getSleepBouts(obj)
             boutNum <- unlist(lapply(bouts, length))
             
-            days <- as.numeric(difftime(obj@data$read_time[length(obj@data[,1])],
-                                        obj@data$read_time[1],
+            readTimes <- obj@data$read_time
+            readTimes <- readTimes[!is.na(readTimes)]
+            days <- as.numeric(difftime(readTimes[length(readTimes)],
+                                        readTimes[1],
                                         units = "days"))
             return(boutNum / days)
           })
