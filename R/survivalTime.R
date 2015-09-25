@@ -51,7 +51,8 @@ setMethod("calcSurvivalTime", signature = "DAM",
 survivalTime <- function(vector, threshold) {
   zeroCounts <- which(vector < threshold)
   
-  if (length(zeroCounts) == length(vector)) {
+  if (length(zeroCounts) == length(vector) || 
+      length(zeroCounts) == length(vector) - 1) {
     # the fly was dead the whole time
     ans <- 1
     # zeroCounts must not be empty or have a length of 1
