@@ -12,6 +12,9 @@ setGeneric("getLightChanges", function(DAM) {standardGeneric("getLightChanges")}
 setMethod("getLightChanges", signature = "DAM",
           definition = function(DAM) {
             changed <- whichChanged(DAM@data$light_status, 0)
+            if (length(changed) == 0) {
+              stop("No light changes detected.")
+            }
             
             # find difference in indices
             diff <- rep(NA, length(changed) - 1)
@@ -25,11 +28,9 @@ setMethod("getLightChanges", signature = "DAM",
             idx <- which(diff < (mean(diff) / 2))
             if (length(idx) > 1) {
               streaks <- c(1, whichChanged(idx, 1), length(idx))
-            } else if (length(idx) == 1) {
+            } else {
               # occurs if only the start or ending index was less than the mean
               streaks <- idx
-            } else {
-              stop("No light changes detected.")
             }
             
             # assemble more parsimonious indexes
