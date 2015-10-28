@@ -28,5 +28,3 @@ test_that("Activity index calculations work.", {
   success <- TRUE
   expect_that(success, is_true())
 })
-
-
