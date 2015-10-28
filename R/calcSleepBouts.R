@@ -76,31 +76,27 @@ setMethod("getSleepBouts", signature = "DAM",
 #'   
 calcBouts <- function(vector) {
   vector <- vector[!is.na(vector)] # make this function NA-proof
-  
   logic <- logical(length(vector))
   logic[vector != 0] <- TRUE # TRUE if asleep
   bouts <- whichChanged(logic, 0)
   
+  # clip ends of incompletely recorded bouts
+  if (logic[1]) { # remove first index if flies started asleep
+    bouts <- bouts[-1]
+  }
+  if (logic[length(logic)]) { # remove first index if flies ended asleep
+    bouts <- bouts[-length(bouts)]
+  }
+  
   # catch flies that NEVER sleep
   if (length(bouts) == 0) {
-    return(integer(0))
-  }
+    return(integer(0)) # flies asleep whole time
+  } 
   
   #okay so we have the start and end of the bouts, now which corresponds to the
-  #start, and which corresponds to the end
-  
-  # if started as asleep, even indices correspond to bout starts
-  if (logic[1]) { 
-    starts <- c(0, bouts[seq(2,length(bouts), 2)]) # include 0
-    ends <- bouts[seq(1, length(bouts), 2)]
-  } else {
-    starts <- bouts[seq(1, length(bouts), 2)]
-    ends <- c(bouts[seq(2,length(bouts),2)])
-  }
-  
-  if (length(starts) > length(ends)) {
-    ends[length(starts)] <- bouts[length(bouts)]
-  }
+  #start, and which corresponds to the end?
+  starts <- bouts[seq(1, length(bouts), 2)]
+  ends <- c(bouts[seq(2,length(bouts),2)])
   finalBouts <- ends - starts
   # remove zero-length bouts (could just be my test case here)
   finalBouts <- finalBouts[finalBouts != 0] 
