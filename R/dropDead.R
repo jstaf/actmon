@@ -18,7 +18,7 @@ setMethod("dropDead", signature = "DAM",
             survival <- calcSurvivalTime(obj)
             toDrop <- names(which(!is.na(survival)))
             if (length(toDrop) > 0) {
-              print(paste("Vial #", toDrop, "have been detected as dead and will be dropped."))
+              message(paste("Vial #s", toDrop, "have been detected as dead and will be dropped.", collapse = " "))
               return(dropAnimals(obj, toDrop))
             } else {
               print("No animals detected as dead.")
